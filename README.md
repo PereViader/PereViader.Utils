@@ -24,5 +24,12 @@ I have plans to publish this project in the following ways:
 ## Contributing
 We welcome contributions to all parts of PereViader.Utils. There are currently no contributing guidelines, but all PRs are welcome. We can continue the conversation there.
 
+
+## Unity3d Utils
+
+When developing in Unity3d, these assets are an integral part of my development plan to a quick add menu for the following projects.
+- https://github.com/Guillemsc/ImplementationSelector
+
+
 ## Acknowledgements
 [@Guillem Sunyer](https://github.com/Guillemsc)
