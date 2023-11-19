@@ -4,24 +4,24 @@ namespace PereViader.Utils.Common.Runtime.Disposing
 {
     public sealed class ActionDisposable<T> : IDisposable<T>
     {
-        private readonly Action action;
-        private bool disposed;
+        private readonly Action _action;
+        private bool _disposed;
 
         public ActionDisposable(T value, Action action)
         {
-            this.action = action;
+            this._action = action;
             this.Value = value;
         }
 
         public void Dispose()
         {
-            if (disposed)
+            if (_disposed)
             {
                 return;
             }
 
-            disposed = true;
-            action.Invoke();
+            _disposed = true;
+            _action.Invoke();
         }
 
         public T Value { get; }

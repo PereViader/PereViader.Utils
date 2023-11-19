@@ -4,6 +4,6 @@ namespace PereViader.Utils.Common.Runtime.Disposing
 {
     public interface IDisposable<out T> : IDisposable
     {
-        public T Value { get; }
+        T Value { get; }
     }
 }
