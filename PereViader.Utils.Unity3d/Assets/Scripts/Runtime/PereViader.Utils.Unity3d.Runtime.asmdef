@@ -1,0 +1,14 @@
+{
+    "name": "PereViader.Utils.Unity3d.Runtime",
+    "rootNamespace": "PereViader.Utils.Unity3d",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
