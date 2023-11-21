@@ -29,6 +29,7 @@ We welcome contributions to all parts of PereViader.Utils. There are currently n
 
 When developing in Unity3d, these assets are an integral part of my development plan to a quick add menu for the following projects.
 - https://github.com/Guillemsc/ImplementationSelector
+- https://github.com/needle-tools/compilation-visualizer
 
 
 ## Acknowledgements
