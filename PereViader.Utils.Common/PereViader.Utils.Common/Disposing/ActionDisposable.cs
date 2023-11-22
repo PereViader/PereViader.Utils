@@ -9,8 +9,8 @@ namespace PereViader.Utils.Common.Runtime.Disposing
 
         public ActionDisposable(T value, Action action)
         {
-            this._action = action;
-            this.Value = value;
+            _action = action;
+            Value = value;
         }
 
         public void Dispose()
