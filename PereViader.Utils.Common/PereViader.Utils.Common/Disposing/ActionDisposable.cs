@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PereViader.Utils.Common.Runtime.Disposing
+namespace PereViader.Utils.Common.Disposing
 {
     public sealed class ActionDisposable<T> : IDisposable<T>
     {
