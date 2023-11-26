@@ -65,7 +65,7 @@ namespace PereViader.Utils.Common.Extensions
             }
         }
         
-        public static async Task<T> WhenFirstCancelRest<T>(
+        public static async Task<T> WhenAnyCancelRest<T>(
             IEnumerable<Func<CancellationToken, Task<T>>> taskFuncs,
             CancellationToken ct)
         {
