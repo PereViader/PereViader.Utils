@@ -90,7 +90,7 @@ namespace PereViader.Utils.Common.Extensions
             }
         }
 
-        public static T WeightedRandom<T>(IEnumerable<T> enumerable, Func<T, double> weightSelector, Random random)
+        public static T WeightedRandom<T>(this IEnumerable<T> enumerable, Func<T, double> weightSelector, Random random)
         {
             var readOnlyList = enumerable.ToReadOnlyList();
             if (readOnlyList.Count == 0)
