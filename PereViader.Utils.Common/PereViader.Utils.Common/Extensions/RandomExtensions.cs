@@ -25,9 +25,9 @@ namespace PereViader.Utils.Common.Extensions
             return rnd.Next(minValue, maxValueExclusive);
         }
         
-        public static int NextIntInclusive(this Random rnd, int minValue, int maxValueExclusive)
+        public static int NextIntInclusive(this Random rnd, int minValue, int maxValueInclusive)
         {
-            return rnd.Next(minValue, maxValueExclusive + 1);
+            return rnd.Next(minValue, maxValueInclusive + 1);
         }
         
         public static bool NextBool(this Random rnd)
@@ -48,6 +48,16 @@ namespace PereViader.Utils.Common.Extensions
             }
             
             return list[rnd.Next(list.Count)];
+        }
+        
+        public static T NextItemWeighted<T>(this Random rnd, IReadOnlyList<T> list, Func<T, double> weightSelector)
+        {
+            if (list.Count == 0)
+            {
+                throw new ArgumentException("Asked for a random NextItem but List is empty", nameof(list));
+            }
+            
+            return list.WeightedRandom(weightSelector, rnd);
         }
         
         public static void Shuffle<T>(this Random rnd, IList<T> list)
