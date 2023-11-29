@@ -34,6 +34,7 @@ When developing in Unity3d, these assets are an integral part of my development 
 ### Benchmarking and Performance analysis
 - https://github.com/dotnet/BenchmarkDotNet
 - https://github.com/Unity-Technologies/UnityDataTools
+- https://github.com/Unity-Technologies/ProjectAuditor
 - https://superluminal.eu/
 
 
