@@ -11,6 +11,28 @@ namespace PereViader.Utils.Common.Extensions
             return source as IReadOnlyList<T> ?? source.ToArray();
         }
         
+        public static List<TResult> ConvertAll<T, TResult>(this IEnumerable<T> source, Func<T, TResult> func, List<TResult> results)
+        {
+            foreach (var element in source)
+            {
+                var result = func(element);
+                results.Add(result);
+            }
+
+            return results;
+        }
+        
+        public static List<TResult> ConvertAll<T, TArg, TResult>(this IEnumerable<T> source, Func<T, TArg, TResult> func, TArg arg, List<TResult> results)
+        {
+            foreach (var element in source)
+            {
+                var result = func(element, arg);
+                results.Add(result);
+            }
+
+            return results;
+        }
+        
         public static IEnumerable<TResult> Select<T, TArg, TResult>(this IEnumerable<T> source, Func<T, TArg, TResult> func, TArg arg)
         {
             foreach (var element in source)
@@ -20,6 +42,32 @@ namespace PereViader.Utils.Common.Extensions
             }
         }
         
+        public static List<T> FindAll<T>(this IEnumerable<T> enumerable, Func<T, bool> match, List<T> result)
+        {
+            foreach (var element in enumerable)    
+            {
+                if (match(element))
+                {
+                    result.Add(element);
+                }
+            }
+
+            return result;
+        }
+        
+        public static List<T> FindAll<T, TArg>(this IEnumerable<T> enumerable, Func<T, TArg, bool> match, TArg arg, List<T> result)
+        {
+            foreach (var element in enumerable)    
+            {
+                if (match(element, arg))
+                {
+                    result.Add(element);
+                }
+            }
+
+            return result;
+        }
+
         public static IEnumerable<T> Where<T, TArg>(this IEnumerable<T> source, Func<T, TArg, bool> predicate, TArg arg)
         {
             foreach (var element in source)
