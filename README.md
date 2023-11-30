@@ -29,18 +29,24 @@ I have plans to publish this project in the following ways:
 We welcome contributions to all parts of PereViader.Utils. There are currently no contributing guidelines, but all PRs are welcome. We can continue the conversation there.
 
 
-## Unity3d Utils
+## External projects
 
+### Workflow
 When developing in Unity3d, these assets are an integral part of my development plan to a quick add menu for the following projects.
 - https://github.com/Guillemsc/ImplementationSelector
-- https://github.com/needle-tools/compilation-visualizer
+- https://github.com/PereViader/ManualDi.Main
+- https://github.com/PereViader/ManualDi.Unity3d
+- https://github.com/PereViader/ManualReserialization
 
 ### Benchmarking and Performance analysis
 - https://github.com/dotnet/BenchmarkDotNet
+- https://github.com/needle-tools/compilation-visualizer
 - https://github.com/Unity-Technologies/UnityDataTools
 - https://github.com/Unity-Technologies/ProjectAuditor
 - https://superluminal.eu/
 
+## CI and CD
+- https://github.com/PereViader/CSharpProjectToUnity3dPackage
 
 
 ## Acknowledgements
