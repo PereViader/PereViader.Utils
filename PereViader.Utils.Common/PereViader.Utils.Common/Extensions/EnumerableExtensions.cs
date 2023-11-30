@@ -11,6 +11,170 @@ namespace PereViader.Utils.Common.Extensions
             return source as IReadOnlyList<T> ?? source.ToArray();
         }
         
+        public static IEnumerable<TResult> Select<T, TArg, TResult>(this IEnumerable<T> source, Func<T, TArg, TResult> func, TArg arg)
+        {
+            foreach (var element in source)
+            {
+                var result = func(element, arg);
+                yield return result;
+            }
+        }
+        
+        public static IEnumerable<T> Where<T, TArg>(this IEnumerable<T> source, Func<T, TArg, bool> predicate, TArg arg)
+        {
+            foreach (var element in source)
+            {
+                if (predicate.Invoke(element, arg))
+                {
+                    yield return element;
+                }
+            }
+        }
+        
+        public static bool Any<T, TArg>(this IEnumerable<T> source, Func<T, TArg, bool> predicate, TArg arg)
+        {
+            foreach (var element in source)
+            {
+                if (predicate.Invoke(element, arg))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
+        public static bool All<T, TArg>(this IEnumerable<T> source, Func<T, TArg, bool> predicate, TArg arg)
+        {
+            foreach (var element in source)
+            {
+                if (!predicate.Invoke(element, arg))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        
+        public static T First<T, TArg>(this IEnumerable<T> source, Func<T, TArg, bool> predicate, TArg arg)
+        {
+            if (!TryGetFirst(source, predicate, arg, out var value))
+            {
+                throw new InvalidOperationException("There was no element that satisfied the predicate");
+            }
+
+            return value;
+        }
+        
+        public static int Count<T, TArg>(this IEnumerable<T> source, Func<T, TArg, bool> predicate, TArg arg)
+        {
+            var count = 0;
+            foreach (var element in source)
+            {
+                if (predicate.Invoke(element, arg))
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        } 
+        
+        public static bool TryGetFirst<T, TArg>(this IEnumerable<T> source, Func<T, TArg, bool> predicate, TArg arg, out T value)
+        {
+            foreach (var element in source)
+            {
+                if (predicate.Invoke(element, arg))
+                {
+                    value = element;
+                    return true;
+                }
+            }
+
+            value = default;
+            return false;
+        }
+        
+        public static IEnumerable<TSource> SkipWhile<TSource, TArg>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TArg, bool> predicate,
+            TArg argument
+        )
+        {
+            using (IEnumerator<TSource> enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    TSource element = enumerator.Current;
+
+                    if (!predicate(element, argument))
+                    {
+                        yield return element;
+                        break;
+                    }
+                }
+
+                while (enumerator.MoveNext())
+                {
+                    TSource element = enumerator.Current;
+                    yield return element;
+                }
+            }
+        }
+        
+        public static IEnumerable<TSource> SkipUntil<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, bool> predicate)
+        {
+            using (IEnumerator<TSource> enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    TSource element = enumerator.Current;
+
+                    if (predicate(element))
+                    {
+                        yield return element;
+                        break;
+                    }
+                }
+
+                while (enumerator.MoveNext())
+                {
+                    TSource element = enumerator.Current;
+                    yield return element;
+                }
+            }
+        }
+        
+        public static IEnumerable<TSource> SkipUntil<TSource, TArg>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TArg, bool> predicate,
+            TArg argument
+        )
+        {
+            using (IEnumerator<TSource> enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    TSource element = enumerator.Current;
+
+                    if (predicate(element, argument))
+                    {
+                        yield return element;
+                        break;
+                    }
+                }
+
+                while (enumerator.MoveNext())
+                {
+                    TSource element = enumerator.Current;
+                    yield return element;
+                }
+            }
+        }
+
         public static IEnumerable<T> TakeRandomNonRepeating<T>(this IEnumerable<T> source, int count, Random random)
         {
             if (count <= 0)
@@ -31,7 +195,7 @@ namespace PereViader.Utils.Common.Extensions
             }
         }
         
-        public static IEnumerable<T> RandomElementsRepeating<T>(this IEnumerable<T> source, int count, Random random)
+        public static IEnumerable<T> TakeRandomElementsRepeating<T>(this IEnumerable<T> source, int count, Random random)
         {
             if (count <= 0)
             {
@@ -66,6 +230,14 @@ namespace PereViader.Utils.Common.Extensions
                 action(element);
             }
         }
+        
+        public static void ForEach<T, TArg>(this IEnumerable<T> source, Action<T, TArg> action, TArg arg)
+        {
+            foreach (var element in source)
+            {
+                action(element, arg);
+            }
+        }
 
         public delegate bool SelectWhereDelegate<in T, TResult>(T value, out TResult result);
         
@@ -80,6 +252,51 @@ namespace PereViader.Utils.Common.Extensions
             }
         }
         
+        public delegate bool SelectWhereDelegate<in T, in TArg, TResult>(T value, TArg arg, out TResult result);
+        
+        public static IEnumerable<TResult> SelectWhere<T, TArg, TResult>(this IEnumerable<T> source, SelectWhereDelegate<T, TArg, TResult> selector, TArg arg)
+        {
+            foreach (var element in source)
+            {
+                if (selector(element, arg, out var result))
+                {
+                    yield return result;
+                }
+            }
+        }
+        
+        public delegate bool SelectWhereIndexedDelegate<in T, TResult>(T value, int index, out TResult result);
+
+        public static IEnumerable<TResult> SelectWhere<T, TResult>(this IEnumerable<T> source, SelectWhereIndexedDelegate<T, TResult> selector)
+        {
+            var index = 0;
+            foreach (var element in source)
+            {
+                if (selector(element, index, out var result))
+                {
+                    yield return result;
+                }
+
+                index++;
+            }
+        }
+        
+        public delegate bool SelectWhereIndexedDelegate<in T, in TArg, TResult>(T value, TArg arg, int index, out TResult result);
+
+        public static IEnumerable<TResult> SelectWhere<T, TArg, TResult>(this IEnumerable<T> source, SelectWhereIndexedDelegate<T, TArg, TResult> selector, TArg arg)
+        {
+            var index = 0;
+            foreach (var element in source)
+            {
+                if (selector(element, arg, index, out var result))
+                {
+                    yield return result;
+                }
+
+                index++;
+            }
+        }
+        
         public static IEnumerable<(T item, int index)> ZipIndex<T>(this IEnumerable<T> source)
         {
             int index = 0;
@@ -88,36 +305,6 @@ namespace PereViader.Utils.Common.Extensions
                 yield return (item, index);
                 index++;
             }
-        }
-
-        public static T WeightedRandom<T>(this IEnumerable<T> enumerable, Func<T, double> weightSelector, Random random)
-        {
-            var readOnlyList = enumerable.ToReadOnlyList();
-            if (readOnlyList.Count == 0)
-            {
-                throw new InvalidOperationException("The enumerable is empty, thus it could not generate a weighted random");
-            }
-
-            var totalWeight = 0d;
-            for (var index = 0; index < readOnlyList.Count; index++)
-            {
-                totalWeight += weightSelector(readOnlyList[index]);
-            }
-
-            var randomWeight = random.NextDouble() * totalWeight;
-            var cumulativeWeight = 0d;
-
-            for (var index = 0; index < readOnlyList.Count; index++)
-            {
-                var item = readOnlyList[index];
-                cumulativeWeight += weightSelector(item);
-                if (cumulativeWeight >= randomWeight)
-                {
-                    return item;
-                }
-            }
-
-            throw new Exception("Could not take a random a random element from the list");
         }
     }
 }

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PereViader.Utils.Common.Attributes;
 
 namespace PereViader.Utils.Common.Extensions
 {
     public static class TaskExtensions
     {
-        [Experimental]
-        public static Task<T> CreateLinkedTask<T>(this Task<T> task, CancellationToken cancellationToken = default)
+        public static Task<T> CreateLinkedTask<T>(this Task<T> task, CancellationToken cancellationToken)
         {
             if (!cancellationToken.CanBeCanceled || task.IsCompleted)
             {
@@ -27,8 +24,7 @@ namespace PereViader.Utils.Common.Extensions
                 .Unwrap();
         }
         
-        [Experimental]
-        public static Task CreateLinkedTask(this Task task, CancellationToken cancellationToken = default)
+        public static Task CreateLinkedTask(this Task task, CancellationToken cancellationToken)
         {
             if (!cancellationToken.CanBeCanceled || task.IsCompleted)
             {
@@ -41,11 +37,10 @@ namespace PereViader.Utils.Common.Extensions
             }
 
             var cancellableTask = cancellationToken.CreateLinkedTask();
-            return Task.WhenAny(task, cancellableTask)
-                .Unwrap();
+            return Task.WhenAny(task, cancellableTask);
         }
         
-        public static async Task WhenFirstCancelRest(
+        public static async Task WhenAnyCancelRest(
             IEnumerable<Func<CancellationToken, Task>> taskFuncs,
             CancellationToken ct)
         {
@@ -55,7 +50,7 @@ namespace PereViader.Utils.Common.Extensions
                 try
                 {
                     await Task.WhenAny(
-                        taskFuncs.Select(x => x.Invoke(token))
+                        taskFuncs.Select((x, t) => x.Invoke(t), token)
                     );
                 }
                 finally
@@ -75,7 +70,7 @@ namespace PereViader.Utils.Common.Extensions
                 try
                 {
                     var task =  await Task.WhenAny(
-                        taskFuncs.Select(x => x.Invoke(token))
+                        taskFuncs.Select((x,t) => x.Invoke(t), token)
                     );
                     return task.Result;
                 }

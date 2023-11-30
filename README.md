@@ -1,7 +1,11 @@
 # PereViader.Utils
 
 ## Overview
-`PereViader.Utils` is a collection of C# utility libraries designed to streamline programming tasks across various contexts. This repository is divided into three main projects: `PereViader.Utils.Common`, `PereViader.Utils.Unity3d`, and `PereViader.Utils.Unity3dCodegen`, each catering to different needs and environments.
+`PereViader.Utils` is a collection of C# utility libraries designed to streamline programming tasks across various contexts. 
+
+Given that this library is primarily intended for my personal use and is currently in its early development phases, it is essential to clarify that extensive efforts toward ensuring backward compatibility will not be a primary focus. Consequently, users should be prepared for the possibility of encountering changes that may disrupt functionality if they opt to utilize the library and subsequently update it in the future.
+
+This repository is divided into three main projects: `PereViader.Utils.Common`, `PereViader.Utils.Unity3d`, and `PereViader.Utils.Unity3dCodegen`, each catering to different needs and environments.
 
 Developed primarily for my personal use as a game developer, these libraries reflect a practical approach to common challenges in game development. I've made them public to assist others in the community, understanding that while my solutions are tailored to game development, they may be beneficial in a variety of programming contexts.
 
