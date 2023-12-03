@@ -33,21 +33,24 @@ We welcome contributions to all parts of PereViader.Utils. There are currently n
 
 ### Workflow
 When developing in Unity3d, these assets are an integral part of my development plan to a quick add menu for the following projects.
-- https://github.com/Guillemsc/ImplementationSelector
-- https://github.com/PereViader/ManualDi.Main
-- https://github.com/PereViader/ManualDi.Unity3d
-- https://github.com/PereViader/ManualReserialization
+- https://github.com/Guillemsc/ImplementationSelector : Serialize data classes as interfaces and get a dropdown to select the desired underlying implementation from the editor 
+- https://github.com/PereViader/ManualDi.Main : C# Dependency injection container with 0 reflection
+- https://github.com/PereViader/ManualDi.Unity3d : Integration of the dependency injection with Unity3d 
+- https://github.com/PereViader/ManualReserialization : Reserialization utility for assets in Unity3d
 
 ### Benchmarking and Performance analysis
-- https://github.com/dotnet/BenchmarkDotNet
-- https://github.com/needle-tools/compilation-visualizer
-- https://github.com/Unity-Technologies/UnityDataTools
-- https://github.com/Unity-Technologies/ProjectAuditor
-- https://superluminal.eu/
+- https://github.com/dotnet/BenchmarkDotNet : Benchmarking library for c# code
+- https://github.com/needle-tools/compilation-visualizer : Unity3d tool to visualize the compilation tree 
+- https://github.com/Unity-Technologies/UnityDataTools : Be able to programmatically query the asset database of unity from the outside. Can provide a sql database of the assets where sql queries can be done on them to programmatically look for issues on the assets
+- https://github.com/Unity-Technologies/ProjectAuditor : Provides hints, tips and fixes to apply on your Unity3d project 
+- https://superluminal.eu/ : Agnostic stack polling analyzer that polls at regular intervals and provides a completely external overview of the performance of applications
 
 ## CI and CD
-- https://github.com/PereViader/CSharpProjectToUnity3dPackage
+- https://github.com/PereViader/CSharpProjectToUnity3dPackage : Can turn a c# solution to the unity package manager format needed to be able to consume it by unity3d 
 
+
+## Git
+- https://github.com/rtyley/bfg-repo-cleaner : Easily remove unwanted data from the git history   
 
 ## Acknowledgements
 [@Guillem Sunyer](https://github.com/Guillemsc)
