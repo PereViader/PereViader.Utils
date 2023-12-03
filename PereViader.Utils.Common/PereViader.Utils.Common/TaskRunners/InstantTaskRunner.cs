@@ -7,14 +7,13 @@ namespace PereViader.Utils.Common.TaskRunners
     public sealed class InstantTaskRunner : IDisposable
     {
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-
-        public bool CanRun { get; private set; } = true;
+        private bool _isDisposed;
 
         public Task Run(Func<CancellationToken, Task> func)
         {
-            if (!CanRun)
+            if (_isDisposed)
             {
-                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+                return Task.FromCanceled(default);
             }
 
             return func(_cancellationTokenSource.Token);
@@ -22,7 +21,7 @@ namespace PereViader.Utils.Common.TaskRunners
 
         public Task Run<TArg>(Func<CancellationToken, TArg, Task> func, TArg arg)
         {
-            if (!CanRun)
+            if (_isDisposed)
             {
                 throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
@@ -32,7 +31,7 @@ namespace PereViader.Utils.Common.TaskRunners
 
         public void Cancel()
         {
-            if (!CanRun)
+            if (_isDisposed)
             {
                 return;
             }
@@ -45,7 +44,7 @@ namespace PereViader.Utils.Common.TaskRunners
         public void Dispose()
         {
             Cancel();
-            CanRun = false;
+            _isDisposed = true;
         }
     }
 }

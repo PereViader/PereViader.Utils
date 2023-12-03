@@ -12,8 +12,7 @@ namespace PereViader.Utils.Common.Extensions
                 return Task.FromCanceled<T>(cancellationToken);
             }
             
-            TaskCompletionSource<T> taskCompletionSource = new TaskCompletionSource<T>();
-            taskCompletionSource.LinkCancellationToken(cancellationToken);
+            TaskCompletionSource<T> taskCompletionSource = cancellationToken.CreateLinkedTaskCompletionSource<T>();
             return taskCompletionSource.Task;
         }
         
@@ -23,10 +22,17 @@ namespace PereViader.Utils.Common.Extensions
             {
                 return Task.FromCanceled(cancellationToken);
             }
-            
-            TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
-            taskCompletionSource.LinkCancellationToken(cancellationToken);
+
+            TaskCompletionSource<object> taskCompletionSource =
+                cancellationToken.CreateLinkedTaskCompletionSource<object>();
             return taskCompletionSource.Task;
+        }
+
+        public static TaskCompletionSource<T> CreateLinkedTaskCompletionSource<T>(this CancellationToken cancellationToken)
+        {
+            TaskCompletionSource<T> taskCompletionSource = new TaskCompletionSource<T>();
+            taskCompletionSource.LinkCancellationToken(cancellationToken);
+            return taskCompletionSource;
         }
     }
 }

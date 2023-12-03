@@ -11,7 +11,7 @@ public class TestInstantTaskRunner
     public void Run_OnEmptyRunnerWithADummyTask_RunsInstantlyAndReturnsSameTask()
     {
         var taskCompletionSource = new TaskCompletionSource();
-        var runner = new InstantTaskRunner();
+        using var runner = new InstantTaskRunner();
         
         var task = runner.Run((token, tcs) => tcs.Task, taskCompletionSource);
         
@@ -22,7 +22,7 @@ public class TestInstantTaskRunner
     public void Run_OnObjectThatWasPreviouslyCanceled_RunsInstantlyAndReturnsSameTask()
     {
         var taskCompletionSource = new TaskCompletionSource();
-        var runner = new InstantTaskRunner();
+        using var runner = new InstantTaskRunner();
         runner.Cancel();
         
         var task = runner.Run((token, tcs) => tcs.Task, taskCompletionSource);
@@ -33,7 +33,7 @@ public class TestInstantTaskRunner
     [Test]
     public void Run_OnDisposed_ThrowsObjectDisposedException()
     {
-        var runner = new InstantTaskRunner();
+        using var runner = new InstantTaskRunner();
         
         runner.Dispose();
         
@@ -46,7 +46,7 @@ public class TestInstantTaskRunner
     [Test]
     public void RunThenCancel_CancelsTheRun()
     {
-        var runner = new InstantTaskRunner();
+        using var runner = new InstantTaskRunner();
 
         var task = runner.Run(token => token.CreateLinkedTask());
         runner.Cancel();
@@ -55,24 +55,9 @@ public class TestInstantTaskRunner
     }
 
     [Test]
-    public void CanRun_OnDisposed_IsFalse()
-    {
-        var runner = new InstantTaskRunner();
-        runner.Dispose();
-        Assert.IsFalse(runner.CanRun);
-    }
-    
-    [Test]
-    public void CanRun_OnNonDisposed_IsTrue()
-    {
-        var runner = new InstantTaskRunner();
-        Assert.IsTrue(runner.CanRun);
-    }
-
-    [Test]
     public void Cancel_OnDisposed_DoesNotThrow()
     {
-        var runner = new InstantTaskRunner();
+        using var runner = new InstantTaskRunner();
         runner.Dispose();
         Assert.DoesNotThrow(() => runner.Cancel());
     }
