@@ -86,10 +86,10 @@ namespace PereViader.Utils.Common.TaskRunners
                 return;
             }
 
+            _taskQueue.Clear();
             _runCancellationTokenSource.Cancel();
             _runCancellationTokenSource.Dispose();
             _runCancellationTokenSource = null;
-            _taskQueue.Clear();
         }
 
         public void Dispose()
