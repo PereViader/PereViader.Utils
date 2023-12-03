@@ -8,50 +8,40 @@ namespace PereViader.Utils.Common.TaskRunners
 {
     public sealed class SequencedTaskRunner : IDisposable
     {
-        private readonly Queue<Func<CancellationToken, Task>> _taskQueue = new Queue<Func<CancellationToken, Task>>();
+        private readonly Queue<(TaskCompletionSource<object?>? completionTaskCompletionSource, Func<CancellationToken, Task> func)> _taskQueue = 
+            new Queue<(TaskCompletionSource<object?>? completionTaskCompletionSource, Func<CancellationToken, Task> func)>();
+        
         private CancellationTokenSource? _runCancellationTokenSource;
         private bool _isDisposed;
 
-        public void RunWithoutCompletion(Func<CancellationToken, Task> func)
+        public void RunAndForget(Func<CancellationToken, Task> func)
         {
             if (_isDisposed)
             {
                 throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
             }
 
-            _taskQueue.Enqueue(func);
+            _taskQueue.Enqueue((null, func));
             if (_runCancellationTokenSource == null)
             {
                 ProcessQueue();
             }
         }
         
-        public Task RunWithCompletion(Func<CancellationToken, Task> func)
+        public Task RunAndTrack(Func<CancellationToken, Task> func)
         {
             if (_isDisposed)
             {
                 throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
             }
 
-            TaskCompletionSource<object?> taskCompletionSource = new TaskCompletionSource<object?>();
+            var taskCompletionSource = new TaskCompletionSource<object?>();
 
-            RunWithoutCompletion(async ct =>
+            _taskQueue.Enqueue((taskCompletionSource, func));
+            if (_runCancellationTokenSource == null)
             {
-                try
-                {
-                    await func(ct); 
-                    taskCompletionSource.SetResult(default);
-                }
-                catch (OperationCanceledException)
-                {
-                    taskCompletionSource.TrySetCanceled();
-                }
-                catch (Exception ex)
-                {
-                    taskCompletionSource.SetException(ex);
-                    throw;
-                }
-            });
+                ProcessQueue();
+            }
 
             return taskCompletionSource.Task;
         }
@@ -64,8 +54,25 @@ namespace PereViader.Utils.Common.TaskRunners
             {
                 while (_taskQueue.Count > 0)
                 {
-                    var taskToRun = _taskQueue.Dequeue();
-                    await taskToRun(token);
+                    var (completion, taskToRun) = _taskQueue.Peek();
+                    
+                    try
+                    {
+                        await taskToRun(token);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        completion?.SetCanceled();
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        completion?.SetException(ex);
+                        throw;
+                    }
+
+                    completion?.TrySetResult(null);
+                    _taskQueue.Dequeue();
                 }
             }
             finally
@@ -86,6 +93,11 @@ namespace PereViader.Utils.Common.TaskRunners
                 return;
             }
 
+            foreach (var elements in _taskQueue)        
+            {
+                elements.completionTaskCompletionSource?.SetCanceled();
+            }
+            
             _taskQueue.Clear();
             _runCancellationTokenSource.Cancel();
             _runCancellationTokenSource.Dispose();

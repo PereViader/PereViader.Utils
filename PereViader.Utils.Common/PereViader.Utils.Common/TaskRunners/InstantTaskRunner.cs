@@ -13,7 +13,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                return Task.FromCanceled(default);
+                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
             return func(_cancellationTokenSource.Token);
