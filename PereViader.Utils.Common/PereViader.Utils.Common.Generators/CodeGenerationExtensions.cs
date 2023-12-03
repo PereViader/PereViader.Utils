@@ -1,12 +1,31 @@
 ﻿using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace PereViader.Utils.Unity3d.CodeGen.Generators
+namespace PereViader.Utils.Common.Generators
 {
     public static class CodeGenerationExtensions
     {
+        public static NamespaceDeclarationSyntax GetNamespaceDeclarationSyntax(SyntaxNode node)
+        {
+            // Attention: Unity is not compatible with this, not adding support for now.
+            
+            // Check for file-scoped namespace
+            // var root = node.SyntaxTree.GetRoot() as CompilationUnitSyntax;
+            // var fileScopedNamespace = root?.Members.OfType<FileScopedNamespaceDeclarationSyntax>().FirstOrDefault();
+            //
+            // if (fileScopedNamespace != null)
+            // {
+            //     return fileScopedNamespace;
+            // }
+
+            // If not file-scoped, get the nearest enclosing namespace
+            var namespaceDeclaration = node.Ancestors().OfType<NamespaceDeclarationSyntax>().LastOrDefault();
+            return namespaceDeclaration;
+        }
+        
         public static INamedTypeSymbol GetEventFieldDeclarationSyntaxDelegateNamedTypeSymbol(EventFieldDeclarationSyntax eventFieldSyntax, SemanticModel semanticModel)
         {
             // Assuming there's only one variable in the declaration.

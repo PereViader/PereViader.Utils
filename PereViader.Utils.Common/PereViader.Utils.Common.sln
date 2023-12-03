@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PereViader.Utils.Common", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PereViader.Utils.Common.Test", "PereViader.Utils.Common.Test\PereViader.Utils.Common.Test.csproj", "{DAE1AE54-722A-4BCB-AB37-48DE405B269B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PereViader.Utils.Common.Generators", "PereViader.Utils.Common.Generators\PereViader.Utils.Common.Generators.csproj", "{730A7BCD-43B8-4B18-BDC4-4D45D178F3DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{DAE1AE54-722A-4BCB-AB37-48DE405B269B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAE1AE54-722A-4BCB-AB37-48DE405B269B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAE1AE54-722A-4BCB-AB37-48DE405B269B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{730A7BCD-43B8-4B18-BDC4-4D45D178F3DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{730A7BCD-43B8-4B18-BDC4-4D45D178F3DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{730A7BCD-43B8-4B18-BDC4-4D45D178F3DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{730A7BCD-43B8-4B18-BDC4-4D45D178F3DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

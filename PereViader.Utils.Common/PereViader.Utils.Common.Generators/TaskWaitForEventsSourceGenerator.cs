@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace PereViader.Utils.Unity3d.CodeGen.Generators
+namespace PereViader.Utils.Common.Generators
 {
     [Generator]
     public class TaskWaitForEventsSourceGenerator : ISourceGenerator
@@ -23,12 +23,10 @@ namespace PereViader.Utils.Unity3d.CodeGen.Generators
             
             foreach (var candidate in receiver.Candidates)
             {
-                var namespaceName = candidate.ClassDeclarationSyntax.Ancestors().OfType<NamespaceDeclarationSyntax>().FirstOrDefault()?.Name.ToString();
-                if (string.IsNullOrEmpty(namespaceName))
-                {
-                    namespaceName = "PereViader.Utils.Unity3d.CodeGen.Runtime";
-                }
-                
+                var namespaceName = CodeGenerationExtensions.GetNamespaceDeclarationSyntax(candidate.ClassDeclarationSyntax)
+                    ?.Name
+                    .ToString() ?? "PereViader.Utils.Common.Generators";
+
                 var className = candidate.ClassDeclarationSyntax.Identifier.Text;
                 var eventFields = candidate.ClassDeclarationSyntax.DescendantNodes().OfType<EventFieldDeclarationSyntax>().ToArray();
 
@@ -42,7 +40,7 @@ namespace PereViader.Utils.Unity3d.CodeGen.Generators
                 stringBuilder.Append($@"
 namespace {namespaceName}
 {{
-    [System.CodeDom.Compiler.GeneratedCode(""PereViader.Utils.Unity3d.CodeGen.Generators.TaskWaitForEventsSourceGenerator"", ""1.0.0.0"")]
+    [System.CodeDom.Compiler.GeneratedCode(""PereViader.Utils.Common.Generators.TaskWaitForEventsSourceGenerator"", ""1.0.0.0"")]
     public static class {className}Extensions
     {{");
                     

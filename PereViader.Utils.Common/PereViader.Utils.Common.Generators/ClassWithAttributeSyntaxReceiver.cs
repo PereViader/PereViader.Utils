@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace PereViader.Utils.Unity3d.CodeGen.Generators
+namespace PereViader.Utils.Common.Generators
 {
     class TaskWaitForEventsSyntaxReceiver : ISyntaxReceiver
     {

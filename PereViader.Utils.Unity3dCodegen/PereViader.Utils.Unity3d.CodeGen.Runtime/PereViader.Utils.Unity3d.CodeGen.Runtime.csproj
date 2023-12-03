@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <RootNamespace>PereViader.Utils.Unity3d.CodeGen.Runtime</RootNamespace>
-    </PropertyGroup>
-
-</Project>

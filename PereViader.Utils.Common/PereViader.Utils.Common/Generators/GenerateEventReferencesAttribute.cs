@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PereViader.Utils.Unity3d.CodeGen.Runtime
+namespace PereViader.Utils.Common.Generators
 {
     // [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     // public sealed class GenerateEventReferencesAttribute : Attribute
