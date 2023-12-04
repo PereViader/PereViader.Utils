@@ -1,16 +1,16 @@
-﻿using System;
+﻿#nullable enable
+using System;
 
 namespace PereViader.Utils.Common.Generators
 {
-    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, Inherited = false)]
     public sealed class GenerateEventTaskWaitsAttribute : Attribute
     {
-        private Type TargetType { get; }
+        public Type? TargetType { get; }
 
-        public GenerateEventTaskWaitsAttribute(Type targetType = null)
+        public GenerateEventTaskWaitsAttribute(Type? targetType = null)
         {
             TargetType = targetType;
         }
-        
     }
 }
