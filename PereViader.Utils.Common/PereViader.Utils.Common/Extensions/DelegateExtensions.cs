@@ -21,6 +21,20 @@ namespace PereViader.Utils.Common.Extensions
             public static readonly Func<TArg1, bool> ReturnTrueFunc = (arg1) => true;
             public static readonly Func<TArg1, bool> ReturnFalseFunc = (arg1) => false;
             public static readonly Func<TArg1, Task> ReturnCompletedTaskWithArg1Func = (arg1) => Task.FromResult(arg1);
+            
+            public static Predicate<TArg1> TrueAfterNCallsPredicate(int n)
+            {
+                return _ =>
+                {
+                    if (n <= 0)
+                    {
+                        return true;
+                    }
+                    
+                    n--;
+                    return false;
+                };
+            }
         }
         
         public static class With<TArg1, TArg2>

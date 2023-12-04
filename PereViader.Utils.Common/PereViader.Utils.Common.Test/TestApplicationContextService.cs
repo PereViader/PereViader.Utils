@@ -16,7 +16,7 @@ public class TestApplicationContextService
         var service = new ApplicationContextService();
 
         service
-            .PushMany(new[] { context1, context2 })
+            .Push(new[] { context1, context2 })
             .AllowComplete();
         
         Received.InOrder(() =>
@@ -70,7 +70,7 @@ public class TestApplicationContextService
     }
     
     [Test]
-    public void PushThenPop_OnStackWithOneElement_AddsThemSuspendsAndResumes()
+    public void PushThenPop_OnEmptyStack_AddsThemSuspendsAndResumes()
     {
         var context1 = CreateApplicationContextThatCompletesInstantly();
         var context2 = CreateApplicationContextThatCompletesInstantly();
@@ -78,7 +78,7 @@ public class TestApplicationContextService
         var service = new ApplicationContextService();
 
         service
-            .PushMany(new []{ context1, context2})
+            .Push(new []{ context1, context2})
             .AllowComplete();
         
         service
@@ -93,6 +93,35 @@ public class TestApplicationContextService
             context2.Enter(Arg.Any<CancellationToken>());
             context2.Exit(Arg.Any<CancellationToken>());
             context1.Resume(Arg.Any<CancellationToken>());
+        });
+    }
+    
+    [Test]
+    public void PopAndPush_OnStackWithOneContext_RunsAsExpected()
+    {
+        var context1 = CreateApplicationContextThatCompletesInstantly();
+        var context2 = CreateApplicationContextThatCompletesInstantly();
+        var context3 = CreateApplicationContextThatCompletesInstantly();
+
+        var service = new ApplicationContextService();
+
+        service
+            .Push(context1)
+            .AllowComplete();
+        
+        service
+            .PopThenPush(new []{ context2, context3 })
+            .AllowComplete();
+
+        Received.InOrder(() =>
+        {
+            context1.Load(Arg.Any<CancellationToken>());
+            context1.Enter(Arg.Any<CancellationToken>());
+            context1.Exit(Arg.Any<CancellationToken>());
+            context2.Load(Arg.Any<CancellationToken>());
+            context2.Suspend(Arg.Any<CancellationToken>());
+            context3.Load(Arg.Any<CancellationToken>());
+            context3.Enter(Arg.Any<CancellationToken>());
         });
     }
 
