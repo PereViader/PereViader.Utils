@@ -40,25 +40,11 @@ public class TestActiveStatus
 
         Assert.That(activeStatus.IsActive(0), Is.EqualTo(defaultState));
     }
-        
-    [Test]
-    [TestCase(true)]
-    [TestCase(false)]
-    public void IsActive_AfterAddingSomeOwnersWithDefaultStateAndOthersWithContrary_IsUpdatedProperly(bool defaultState)
-    {
-        var activeStatus = new ActiveStatus<int>(defaultState);
 
-        activeStatus.UpdateStatus(new object(), 0, defaultState);
-        activeStatus.UpdateStatus(new object(), 0, !defaultState);
-        activeStatus.UpdateStatus(new object(), 0, defaultState);
-            
-        Assert.That(activeStatus.IsActive(0), Is.EqualTo(!defaultState));
-    }
-        
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void UpdateStatus_ReturnsTrueWhenItUpdatesItAndFalseWhenNot(bool defaultState)
+    public void UpdateStatus_ProperlyUpdatesStatusEachTime(bool defaultState)
     {
         var activeStatus = new ActiveStatus<int>(defaultState);
 
@@ -66,10 +52,12 @@ public class TestActiveStatus
         var update2 = activeStatus.UpdateStatus(new object(), 0, !defaultState);
         var update3 = activeStatus.UpdateStatus(new object(), 0, !defaultState);
         var update4 = activeStatus.UpdateStatus(new object(), 0, defaultState);
+        var isActive = activeStatus.IsActive(0);
 
         Assert.That(update1, Is.EqualTo(false));
         Assert.That(update2, Is.EqualTo(true));
         Assert.That(update3, Is.EqualTo(false));
         Assert.That(update4, Is.EqualTo(false));
+        Assert.That(isActive, Is.EqualTo(!defaultState));
     }
 }
