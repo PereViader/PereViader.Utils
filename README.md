@@ -37,6 +37,7 @@ When developing in Unity3d, these assets are an integral part of my development 
 - https://github.com/PereViader/ManualDi.Main : C# Dependency injection container with 0 reflection
 - https://github.com/PereViader/ManualDi.Unity3d : Integration of the dependency injection with Unity3d 
 - https://github.com/PereViader/ManualReserialization : Reserialization utility for assets in Unity3d
+- https://docs.unity3d.com/Packages/com.unity.localization@1.4 : Localization
 
 ### Benchmarking and Performance analysis
 - https://github.com/dotnet/BenchmarkDotNet : Benchmarking library for c# code
