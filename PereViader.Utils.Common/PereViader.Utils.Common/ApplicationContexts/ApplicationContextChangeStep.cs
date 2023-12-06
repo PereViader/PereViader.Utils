@@ -1,4 +1,4 @@
-﻿namespace PereViader.Utils.Common.ApplicationContext
+﻿namespace PereViader.Utils.Common.ApplicationContexts
 {
     public enum ApplicationContextChangeStep
     {

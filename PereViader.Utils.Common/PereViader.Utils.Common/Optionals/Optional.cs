@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PereViader.Utils.Common.Optional
+namespace PereViader.Utils.Common.Optionals
 {
     public readonly struct Optional<T>
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PereViader.Utils.Common.ActiveStatus
+namespace PereViader.Utils.Common.ActiveStatuses
 {
     public sealed class ActiveStatus<TId>
     {

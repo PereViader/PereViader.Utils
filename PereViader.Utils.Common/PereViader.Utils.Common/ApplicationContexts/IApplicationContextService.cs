@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using PereViader.Utils.Common.Generators;
 
-namespace PereViader.Utils.Common.ApplicationContext
+namespace PereViader.Utils.Common.ApplicationContexts
 {
     [GenerateEventTaskWaits]
     public interface IApplicationContextService

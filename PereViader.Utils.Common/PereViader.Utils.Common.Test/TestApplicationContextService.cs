@@ -1,6 +1,6 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
-using PereViader.Utils.Common.ApplicationContext;
+using PereViader.Utils.Common.ApplicationContexts;
 
 namespace PereViader.Utils.Common.Test;
 

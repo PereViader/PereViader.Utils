@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using PereViader.Utils.Common.Generators;
 
-namespace PereViader.Utils.Common.ApplicationContext
+namespace PereViader.Utils.Common.ApplicationContexts
 {
     /// <summary>
     /// This handle represents a change in the application context. The change will wait until AllowComplete is called on it

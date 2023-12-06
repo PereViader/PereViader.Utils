@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using PereViader.Utils.Common.Extensions;
 using PereViader.Utils.Common.TaskRunners;
 
-namespace PereViader.Utils.Common.ApplicationContext
+namespace PereViader.Utils.Common.ApplicationContexts
 {
     public class ApplicationContextService : IApplicationContextService
     {

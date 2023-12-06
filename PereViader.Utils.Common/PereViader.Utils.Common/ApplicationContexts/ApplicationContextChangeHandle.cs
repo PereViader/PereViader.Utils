@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using PereViader.Utils.Common.Extensions;
 
-namespace PereViader.Utils.Common.ApplicationContext
+namespace PereViader.Utils.Common.ApplicationContexts
 {
     public class ApplicationContextChangeHandle : IApplicationContextChangeHandle
     {

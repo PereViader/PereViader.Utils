@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace PereViader.Utils.Common.ApplicationContext
+namespace PereViader.Utils.Common.ApplicationContexts
 {
     /// <summary>
     /// An application context is whatever area of your application that has its own separate identity from the rest of the app.

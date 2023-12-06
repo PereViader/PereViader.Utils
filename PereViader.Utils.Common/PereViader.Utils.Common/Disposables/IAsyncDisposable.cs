@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace PereViader.Utils.Common.Disposing
+namespace PereViader.Utils.Common.Disposables
 {
     public interface IAsyncDisposable
     {
