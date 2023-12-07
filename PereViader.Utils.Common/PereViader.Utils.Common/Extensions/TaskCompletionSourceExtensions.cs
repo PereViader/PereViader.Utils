@@ -19,15 +19,5 @@ namespace PereViader.Utils.Common.Extensions
                 ((TaskCompletionSource<T>)state).TrySetCanceled();
             }, taskCompletionSource);        
         }
-        
-        public static CancellationTokenRegistration LinkCancellationTokenUnchecked<T>(
-            this TaskCompletionSource<T> taskCompletionSource,
-            CancellationToken cancellationToken)
-        {
-            return cancellationToken.Register(state =>
-            {
-                ((TaskCompletionSource<T>)state).TrySetCanceled();
-            }, taskCompletionSource);        
-        }
     }
 }
