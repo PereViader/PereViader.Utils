@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using System.Collections.Generic;
+using PereViader.Utils.Common.Extensions;
 
 namespace PereViader.Utils.Common.TaskRunners
 {
     public sealed class TaskRunner : IDisposable
     {
-        private readonly Queue<(TaskCompletionSource<object?>? completionTaskCompletionSource, Func<CancellationToken, Task> func)> _taskSequenceQueue = 
-            new Queue<(TaskCompletionSource<object?>? completionTaskCompletionSource, Func<CancellationToken, Task> func)>();
+        private readonly Queue<Func<CancellationToken, Task>> _taskSequenceQueue = 
+            new Queue<Func<CancellationToken, Task>>();
 
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private bool _isRunning;
@@ -25,6 +26,17 @@ namespace PereViader.Utils.Common.TaskRunners
 
             return func(_cancellationTokenSource.Token);
         }
+        
+        public Task RunInstantly(IEnumerable<Func<CancellationToken, Task>> funcs)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+
+            var tasks = funcs.Select((x, ct) => x(ct), _cancellationTokenSource.Token);
+            return Task.WhenAll(tasks);
+        }
 
         public Task RunInstantly<TArg>(Func<CancellationToken, TArg, Task> func, TArg arg)
         {
@@ -36,6 +48,17 @@ namespace PereViader.Utils.Common.TaskRunners
             return func(_cancellationTokenSource.Token, arg);
         }
         
+        public Task RunInstantly<TArg>(IEnumerable<Func<CancellationToken, TArg, Task>> funcs, TArg arg)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+
+            var tasks = funcs.Select((x, pair) => x(pair.Token, pair.arg), (_cancellationTokenSource.Token, arg));
+            return Task.WhenAll(tasks);
+        }
+        
         public void RunSequencedAndForget(Func<CancellationToken, Task> func)
         {
             if (_isDisposed)
@@ -43,7 +66,25 @@ namespace PereViader.Utils.Common.TaskRunners
                 throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
             }
 
-            _taskSequenceQueue.Enqueue((null, func));
+            _taskSequenceQueue.Enqueue(func);
+            if (!_isRunning)
+            {
+                ProcessSequenceQueue();
+            }
+        }
+        
+        public void RunSequencedAndForget(IEnumerable<Func<CancellationToken, Task>> funcs)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
+            }
+
+            foreach (var func in funcs)
+            {
+                _taskSequenceQueue.Enqueue(func);
+            }
+            
             if (!_isRunning)
             {
                 ProcessSequenceQueue();
@@ -56,10 +97,47 @@ namespace PereViader.Utils.Common.TaskRunners
             {
                 throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
             }
+            
+            _taskSequenceQueue.Enqueue(func);
+            
+            var taskCompletionSource = _cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<object?>();
+            
+            _taskSequenceQueue.Enqueue(ct =>
+            {
+                ct.ThrowIfCancellationRequested();
+                taskCompletionSource.TrySetResult(null);
+                return Task.CompletedTask;
+            });
+            
+            if (!_isRunning)
+            {
+                ProcessSequenceQueue();
+            }
 
-            var taskCompletionSource = new TaskCompletionSource<object?>();
+            return taskCompletionSource.Task;
+        }
+        
+        public Task RunSequencedAndTrack(IEnumerable<Func<CancellationToken, Task>> funcs)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
+            }
+            
+            foreach (var func in funcs)
+            {
+                _taskSequenceQueue.Enqueue(func);
+            }
+            
+            var taskCompletionSource = _cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<object?>();
 
-            _taskSequenceQueue.Enqueue((taskCompletionSource, func));
+            _taskSequenceQueue.Enqueue(ct =>
+            {
+                ct.ThrowIfCancellationRequested();
+                taskCompletionSource.TrySetResult(null);
+                return Task.CompletedTask;
+            });
+            
             if (!_isRunning)
             {
                 ProcessSequenceQueue();
@@ -76,25 +154,16 @@ namespace PereViader.Utils.Common.TaskRunners
             {
                 while (_taskSequenceQueue.Count > 0)
                 {
-                    var (completion, taskToRun) = _taskSequenceQueue.Peek();
+                    var taskToRun= _taskSequenceQueue.Dequeue();
 
                     try
                     {
                         await taskToRun(token);
                     }
-                    catch (TaskCanceledException)
+                    catch (OperationCanceledException)
                     {
-                        completion?.SetCanceled();
                         throw;
                     }
-                    catch (Exception ex)
-                    {
-                        completion?.SetException(ex);
-                        throw;
-                    }
-
-                    completion?.TrySetResult(null);
-                    _taskSequenceQueue.Dequeue();
                 }
             }
             finally
@@ -121,11 +190,6 @@ namespace PereViader.Utils.Common.TaskRunners
         private void DoCancel()
         {
             _isRunning = false;
-
-            foreach (var elements in _taskSequenceQueue)
-            {
-                elements.completionTaskCompletionSource?.SetCanceled();
-            }
 
             _taskSequenceQueue.Clear();
             _cancellationTokenSource.Cancel();
