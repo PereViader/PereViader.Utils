@@ -43,7 +43,14 @@ namespace PereViader.Utils.Common.TaskRunners
 
         public void Dispose()
         {
-            Cancel();
+            if (_isDisposed)
+            {
+                return;
+            }
+            
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = null;
             _isDisposed = true;
         }
     }
