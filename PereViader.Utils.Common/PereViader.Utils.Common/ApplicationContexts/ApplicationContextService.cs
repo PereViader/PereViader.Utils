@@ -13,7 +13,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
         public event Action OnFinishApplicationContextChange;
         
         private readonly Stack<IApplicationContext> _contextStack = new Stack<IApplicationContext>();
-        private readonly SequencedTaskRunner _sequencedTaskRunner = new SequencedTaskRunner();
+        private readonly TaskRunner _taskRunner = new TaskRunner();
         
         public IApplicationContextChangeHandle Push(IApplicationContext applicationContext)
         {
@@ -24,7 +24,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
         {
             var handle = new ApplicationContextChangeHandle();
             
-            _sequencedTaskRunner.RunAndForget((ct) => DoPush(applicationContexts, handle, ct));
+            _taskRunner.RunSequencedAndForget((ct) => DoPush(applicationContexts, handle, ct));
 
             return handle;
         }
@@ -61,7 +61,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
         {
             var handle = new ApplicationContextChangeHandle();
             
-            _sequencedTaskRunner.RunAndForget((ct) => DoPopUntilThenPush(applicationContexts, predicate, handle, ct));
+            _taskRunner.RunSequencedAndForget((ct) => DoPopUntilThenPush(applicationContexts, predicate, handle, ct));
 
             return handle;
         }
@@ -80,7 +80,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
         {
             var handle = new ApplicationContextChangeHandle();
             
-            _sequencedTaskRunner.RunAndForget((ct) => DoPopUntil(predicate, handle, ct));
+            _taskRunner.RunSequencedAndForget((ct) => DoPopUntil(predicate, handle, ct));
 
             return handle;
         }
