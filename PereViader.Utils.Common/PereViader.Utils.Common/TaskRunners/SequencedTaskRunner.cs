@@ -11,8 +11,9 @@ namespace PereViader.Utils.Common.TaskRunners
     {
         private readonly Queue<(TaskCompletionSource<object?>? completionTaskCompletionSource, Func<CancellationToken, Task> func)> _taskQueue = 
             new Queue<(TaskCompletionSource<object?>? completionTaskCompletionSource, Func<CancellationToken, Task> func)>();
-        
-        private CancellationTokenSource? _runCancellationTokenSource;
+
+        private CancellationTokenSource _runCancellationTokenSource = new CancellationTokenSource();
+        private bool _isRunning;
         private bool _isDisposed;
 
         public void RunAndForget(Func<CancellationToken, Task> func)
@@ -23,12 +24,12 @@ namespace PereViader.Utils.Common.TaskRunners
             }
 
             _taskQueue.Enqueue((null, func));
-            if (_runCancellationTokenSource == null)
+            if (!_isRunning)
             {
                 ProcessQueue();
             }
         }
-        
+
         public Task RunAndTrack(Func<CancellationToken, Task> func)
         {
             if (_isDisposed)
@@ -39,7 +40,7 @@ namespace PereViader.Utils.Common.TaskRunners
             var taskCompletionSource = new TaskCompletionSource<object?>();
 
             _taskQueue.Enqueue((taskCompletionSource, func));
-            if (_runCancellationTokenSource == null)
+            if (!_isRunning)
             {
                 ProcessQueue();
             }
@@ -49,14 +50,14 @@ namespace PereViader.Utils.Common.TaskRunners
 
         private async void ProcessQueue()
         {
-            _runCancellationTokenSource = new CancellationTokenSource();
+            _isRunning = true;
             var token = _runCancellationTokenSource.Token;
             try
             {
                 while (_taskQueue.Count > 0)
                 {
                     var (completion, taskToRun) = _taskQueue.Peek();
-                    
+
                     try
                     {
                         await taskToRun(token);
@@ -81,33 +82,42 @@ namespace PereViader.Utils.Common.TaskRunners
                 //When cancellation is requested, cleanup is done on the cancellation method
                 if (!token.IsCancellationRequested)
                 {
-                    _runCancellationTokenSource.Dispose();
-                    _runCancellationTokenSource = null;
+                    _isRunning = false;
                 }
             }
         }
 
         public void CancelRunning()
         {
-            if (_isDisposed || _runCancellationTokenSource == null)
-            {
+            if (DoCancel()) 
                 return;
+            
+            _runCancellationTokenSource = new CancellationTokenSource();
+        }
+
+        private bool DoCancel()
+        {
+            if (_isDisposed)
+            {
+                return true;
             }
 
-            foreach (var elements in _taskQueue)        
+            _isRunning = false;
+
+            foreach (var elements in _taskQueue)
             {
                 elements.completionTaskCompletionSource?.SetCanceled();
             }
-            
+
             _taskQueue.Clear();
             _runCancellationTokenSource.Cancel();
             _runCancellationTokenSource.Dispose();
-            _runCancellationTokenSource = null;
+            return false;
         }
 
         public void Dispose()
         {
-            CancelRunning();
+            DoCancel();
             _isDisposed = true;
         }
     }

@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using PereViader.Utils.Common.ActiveStatus;
+using PereViader.Utils.Common.ActiveStatuses;
 
 namespace PereViader.Utils.Common.Test;
 
