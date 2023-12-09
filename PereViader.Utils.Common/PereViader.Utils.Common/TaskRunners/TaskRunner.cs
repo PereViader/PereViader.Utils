@@ -21,7 +21,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
             
             return func(_cancellationTokenSource.Token);
@@ -37,7 +37,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
             var tasks = funcs.Select((x, ct) => x(ct), _cancellationTokenSource.Token);
@@ -48,7 +48,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
@@ -60,7 +60,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
             return func(arg, _cancellationTokenSource.Token);
@@ -70,7 +70,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
             
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
@@ -81,7 +81,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
             var tasks = funcs.Select((x, pair) => x(pair.arg, pair.Token), (_cancellationTokenSource.Token, arg));
@@ -92,7 +92,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
@@ -104,7 +104,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
             _taskSequenceQueue.Enqueue((cancellationToken, func));
@@ -118,7 +118,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
             foreach (var func in funcs)
@@ -136,7 +136,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
             
             _taskSequenceQueue.Enqueue((cancellationToken, func));
@@ -170,7 +170,7 @@ namespace PereViader.Utils.Common.TaskRunners
         {
             if (_isDisposed)
             {
-                throw new ObjectDisposedException("SequencedTaskRunner", "Cannot run task on a disposed SequencedTaskRunner.");
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
             
             foreach (var func in funcs)
