@@ -13,7 +13,7 @@ public class TestTaskRunner
         var taskCompletionSource = new TaskCompletionSource();
         using var runner = new TaskRunner();
         
-        var task = runner.RunInstantly((token, tcs) => tcs.Task, taskCompletionSource);
+        var task = runner.RunInstantly((tcs, token) => tcs.Task, taskCompletionSource);
         
         Assert.That(task, Is.EqualTo(taskCompletionSource.Task));
     }
@@ -25,7 +25,7 @@ public class TestTaskRunner
         using var runner = new TaskRunner();
         runner.CancelRunning();
         
-        var task = runner.RunInstantly((token, tcs) => tcs.Task, taskCompletionSource);
+        var task = runner.RunInstantly((tcs, token) => tcs.Task, taskCompletionSource);
         
         Assert.That(task, Is.EqualTo(taskCompletionSource.Task));
     }

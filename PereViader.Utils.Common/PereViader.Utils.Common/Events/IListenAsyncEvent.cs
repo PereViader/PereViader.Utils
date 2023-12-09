@@ -8,9 +8,9 @@ namespace PereViader.Utils.Common.Events
     {
         event Action<T> OnEvent;
 
-        void AddInstantListener(Func<CancellationToken, Task> func);
-        void RemoveInstantListener(Func<CancellationToken, Task> func);
-        void AddSequencedListener(Func<CancellationToken, Task> func);
-        void RemoveSequencedListener(Func<CancellationToken, Task> func);
+        void AddInstantListener(Func<T, CancellationToken, Task> func);
+        void RemoveInstantListener(Func<T, CancellationToken, Task> func);
+        void AddSequencedListener(Func<T, CancellationToken, Task> func);
+        void RemoveSequencedListener(Func<T, CancellationToken, Task> func);
     }
 }

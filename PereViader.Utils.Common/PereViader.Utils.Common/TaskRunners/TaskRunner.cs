@@ -56,17 +56,17 @@ namespace PereViader.Utils.Common.TaskRunners
             await Task.WhenAll(tasks);
         }
 
-        public Task RunInstantly<TArg>(Func<CancellationToken, TArg, Task> func, TArg arg)
+        public Task RunInstantly<TArg>(Func<TArg, CancellationToken, Task> func, TArg arg)
         {
             if (_isDisposed)
             {
                 throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
-            return func(_cancellationTokenSource.Token, arg);
+            return func(arg, _cancellationTokenSource.Token);
         }
         
-        public async Task RunInstantly<TArg>(Func<CancellationToken, TArg, Task> func, TArg arg, CancellationToken cancellationToken)
+        public async Task RunInstantly<TArg>(Func<TArg, CancellationToken, Task> func, TArg arg, CancellationToken cancellationToken)
         {
             if (_isDisposed)
             {
@@ -74,21 +74,21 @@ namespace PereViader.Utils.Common.TaskRunners
             }
             
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
-            await func(linkedCts.Token, arg);
+            await func(arg, linkedCts.Token);
         }
         
-        public Task RunInstantly<TArg>(IEnumerable<Func<CancellationToken, TArg, Task>> funcs, TArg arg)
+        public Task RunInstantly<TArg>(IEnumerable<Func<TArg, CancellationToken, Task>> funcs, TArg arg)
         {
             if (_isDisposed)
             {
                 throw new ObjectDisposedException("InstantTaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
-            var tasks = funcs.Select((x, pair) => x(pair.Token, pair.arg), (_cancellationTokenSource.Token, arg));
+            var tasks = funcs.Select((x, pair) => x(pair.arg, pair.Token), (_cancellationTokenSource.Token, arg));
             return Task.WhenAll(tasks);
         }
         
-        public async Task RunInstantly<TArg>(IEnumerable<Func<CancellationToken, TArg, Task>> funcs, TArg arg, CancellationToken cancellationToken)
+        public async Task RunInstantly<TArg>(IEnumerable<Func<TArg, CancellationToken, Task>> funcs, TArg arg, CancellationToken cancellationToken)
         {
             if (_isDisposed)
             {
@@ -96,7 +96,7 @@ namespace PereViader.Utils.Common.TaskRunners
             }
 
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
-            var tasks = funcs.Select((x, pair) => x(pair.Token, pair.arg), (linkedCts.Token, arg));
+            var tasks = funcs.Select((x, pair) => x(pair.arg, pair.Token), (linkedCts.Token, arg));
             await Task.WhenAll(tasks);
         }
         
@@ -160,6 +160,12 @@ namespace PereViader.Utils.Common.TaskRunners
             await taskCompletionSource.Task;
         }
         
+        public Task RunSequencedAndTrack<TArg>(Func<TArg, CancellationToken, Task> func, TArg arg, CancellationToken cancellationToken = default)
+        {
+            // ReSharper disable once HeapView.CanAvoidClosure
+            return RunSequencedAndTrack(ct => func(arg, ct), cancellationToken);
+        }
+        
         public async Task RunSequencedAndTrack(IEnumerable<Func<CancellationToken, Task>> funcs, CancellationToken cancellationToken = default)
         {
             if (_isDisposed)
@@ -189,6 +195,13 @@ namespace PereViader.Utils.Common.TaskRunners
             }
 
             await taskCompletionSource.Task;
+        }
+
+        public Task RunSequencedAndTrack<TArg>(IEnumerable<Func<TArg, CancellationToken, Task>> funcs, TArg arg,
+            CancellationToken cancellationToken = default)
+        {
+            var funcsWithoutArg = funcs.Select<Func<TArg, CancellationToken, Task>, TArg, Func<CancellationToken, Task>>((x, y) => ct => x(y, ct), arg);
+            return RunSequencedAndTrack(funcsWithoutArg, cancellationToken);
         }
 
         private async void ProcessSequenceQueue()

@@ -7,13 +7,12 @@ using PereViader.Utils.Common.TaskRunners;
 
 namespace PereViader.Utils.Common.Events
 {
-    [Experimental]
     public sealed class AsyncEvent<T> : IAsyncEvent<T>
     {
         public event Action<T> OnEvent;
         
-        private readonly List<Func<CancellationToken, Task>> _instantListeners = new List<Func<CancellationToken, Task>>();
-        private readonly List<Func<CancellationToken, Task>> _sequencedListeners = new List<Func<CancellationToken, Task>>();
+        private readonly List<Func<T, CancellationToken, Task>> _instantListeners = new List<Func<T, CancellationToken, Task>>();
+        private readonly List<Func<T, CancellationToken, Task>> _sequencedListeners = new List<Func<T, CancellationToken, Task>>();
 
         private readonly TaskRunner _taskRunner = new TaskRunner();
 
@@ -21,22 +20,22 @@ namespace PereViader.Utils.Common.Events
         public int InstantListenerCount => _instantListeners.Count;
         public int SequencedListenerCount => _sequencedListeners.Count;
 
-        public void AddInstantListener(Func<CancellationToken, Task> func)
+        public void AddInstantListener(Func<T, CancellationToken, Task> func)
         {
             _instantListeners.Add(func);
         }
 
-        public void RemoveInstantListener(Func<CancellationToken, Task> func)
+        public void RemoveInstantListener(Func<T, CancellationToken, Task> func)
         {
             _instantListeners.Remove(func);
         }
 
-        public void AddSequencedListener(Func<CancellationToken, Task> func)
+        public void AddSequencedListener(Func<T, CancellationToken, Task> func)
         {
             _sequencedListeners.Add(func);
         }
 
-        public void RemoveSequencedListener(Func<CancellationToken, Task> func)
+        public void RemoveSequencedListener(Func<T, CancellationToken, Task> func)
         {
             _sequencedListeners.Remove(func);
         }
@@ -46,8 +45,8 @@ namespace PereViader.Utils.Common.Events
             OnEvent?.Invoke(value);
             
             return Task.WhenAll(
-                _taskRunner.RunInstantly(_instantListeners, ct),
-                _taskRunner.RunSequencedAndTrack(_sequencedListeners, ct)
+                _taskRunner.RunInstantly(_instantListeners, value, ct),
+                _taskRunner.RunSequencedAndTrack(_sequencedListeners, value, ct)
             );
         }
 
