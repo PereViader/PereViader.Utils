@@ -229,7 +229,6 @@ namespace PereViader.Utils.Common.TaskRunners
                     }
                     catch (OperationCanceledException)
                     {
-                        throw;
                     }
                 }
             }
