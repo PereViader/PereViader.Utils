@@ -4,7 +4,7 @@ using PereViader.Utils.Common.Generators;
 
 namespace PereViader.Utils.Common.ApplicationContexts
 {
-    [GenerateEventTaskWaits]
+    //[GenerateEventTaskWaits]
     public interface IApplicationContextService
     {
         event Action OnBeginApplicationContextChange;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using PereViader.Utils.Common.Attributes;
 using PereViader.Utils.Common.TaskRunners;
 
 namespace PereViader.Utils.Common.Events

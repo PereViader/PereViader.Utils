@@ -11,24 +11,24 @@ namespace PereViader.Utils.Common.Generators
     {
         public void Initialize(GeneratorInitializationContext context)
         {
-            context.RegisterForSyntaxNotifications(() => new TaskWaitForEventsSyntaxReceiver());
+            context.RegisterForSyntaxNotifications(() => new TypeDeclarationWithAttributeSyntaxReceiver("GenerateEventTaskWaits"));
         }
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!(context.SyntaxReceiver is TaskWaitForEventsSyntaxReceiver receiver))
+            if (!(context.SyntaxReceiver is TypeDeclarationWithAttributeSyntaxReceiver receiver))
             {
                 return;
             }
             
             foreach (var candidate in receiver.Candidates)
             {
-                var namespaceName = CodeGenerationExtensions.GetNamespaceDeclarationSyntax(candidate.ClassDeclarationSyntax)
+                var namespaceName = CodeGenerationExtensions.GetNamespaceDeclarationSyntax(candidate.TypeDeclarationSyntax)
                     ?.Name
                     .ToString() ?? "PereViader.Utils.Common.Generators";
 
-                var className = candidate.ClassDeclarationSyntax.Identifier.Text;
-                var eventFields = candidate.ClassDeclarationSyntax.DescendantNodes().OfType<EventFieldDeclarationSyntax>().ToArray();
+                var className = candidate.TypeDeclarationSyntax.Identifier.Text;
+                var eventFields = candidate.TypeDeclarationSyntax.DescendantNodes().OfType<EventFieldDeclarationSyntax>().ToArray();
 
                 if (eventFields.Length == 0)
                 {
