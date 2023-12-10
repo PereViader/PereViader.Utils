@@ -354,5 +354,15 @@ namespace PereViader.Utils.Common.Extensions
                 index++;
             }
         }
+        
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
+        {
+            return new HashSet<T>(source);
+        }
+        
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> equalityComparer)
+        {
+            return new HashSet<T>(source, equalityComparer);
+        }
     }
 }

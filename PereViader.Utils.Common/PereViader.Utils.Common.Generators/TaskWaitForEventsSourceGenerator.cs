@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -28,7 +29,22 @@ namespace PereViader.Utils.Common.Generators
                     .ToString() ?? "PereViader.Utils.Common.Generators";
 
                 var className = candidate.TypeDeclarationSyntax.Identifier.Text;
-                var eventFields = candidate.TypeDeclarationSyntax.DescendantNodes().OfType<EventFieldDeclarationSyntax>().ToArray();
+                var eventFields = candidate.TypeDeclarationSyntax
+                    .DescendantNodes()
+                    .OfType<EventFieldDeclarationSyntax>()
+                    .ToArray();
+
+                var usingStrings = candidate.TypeDeclarationSyntax.GetUsingDirectives();
+                var usingDirectiveSet = new HashSet<string>()
+                {
+                    "using System.Threading;",
+                    "using System.Threading.Tasks;"
+                };
+
+                foreach (var usingElement in usingStrings)
+                {
+                    usingDirectiveSet.Add(usingElement.ToString());
+                }
 
                 if (eventFields.Length == 0)
                 {
@@ -36,6 +52,11 @@ namespace PereViader.Utils.Common.Generators
                 }
 
                 var stringBuilder = new StringBuilder();
+
+                foreach (var usingElement in usingDirectiveSet)
+                {
+                    stringBuilder.AppendLine(usingElement);
+                }
 
                 stringBuilder.Append($@"
 namespace {namespaceName}
@@ -56,18 +77,21 @@ namespace {namespaceName}
                         var eventName = eventVariable.Identifier.Text;
                         
                         string returnType;
+                        string internalReturnType;
                         string setResultArgs;
                         string paramType;
 
                         if (parameters.Length == 0)
                         {
+                            internalReturnType = "<object>";
                             returnType = string.Empty;
-                            setResultArgs = string.Empty;
+                            setResultArgs = "null";
                             paramType = "()";
                         }
                         else if (parameters.Length == 1)
                         {
                             returnType = $"<{parameters[0].Type}>";
+                            internalReturnType = returnType;
                             setResultArgs = parameters[0].Name;
                             paramType = $"({parameters[0].Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)} {parameters[0].Name})";
                         }
@@ -76,6 +100,7 @@ namespace {namespaceName}
                             paramType = $"({string.Join(", ", parameters.Select(x => $"{x.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)} {x.Name}"))})";
                             setResultArgs = $"({string.Join(", ", parameters.Select(x => x.Name))})";
                             returnType = $"<{paramType}>";
+                            internalReturnType = returnType;
                         }
 
                         var generatedCode = $@"
@@ -87,7 +112,7 @@ namespace {namespaceName}
                 return Task.FromCanceled{returnType}(ct);
             }}
             
-            TaskCompletionSource{returnType} tcs = new TaskCompletionSource{returnType}();
+            TaskCompletionSource{internalReturnType} tcs = new TaskCompletionSource{internalReturnType}();
             if(ct.CanBeCanceled)
             {{
                 ct.Register(() => tcs.TrySetCanceled());

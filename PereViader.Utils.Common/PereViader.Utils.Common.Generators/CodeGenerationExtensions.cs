@@ -8,6 +8,12 @@ namespace PereViader.Utils.Common.Generators
 {
     public static class CodeGenerationExtensions
     {
+        public static SyntaxList<UsingDirectiveSyntax>? GetUsingDirectives(this SyntaxNode node)
+        {
+            var root = node.SyntaxTree.GetRoot() as CompilationUnitSyntax;
+            return root?.Usings;
+        }
+        
         public static NamespaceDeclarationSyntax GetNamespaceDeclarationSyntax(SyntaxNode node)
         {
             // Attention: Unity is not compatible with this, not adding support for now.
