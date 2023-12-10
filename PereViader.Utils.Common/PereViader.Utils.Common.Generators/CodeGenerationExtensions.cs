@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,6 +9,38 @@ namespace PereViader.Utils.Common.Generators
 {
     public static class CodeGenerationExtensions
     {
+        public static void ReportDebugDiagnostic(this GeneratorExecutionContext context, string message)
+        {
+            var diagnosticDescriptor = new DiagnosticDescriptor("debug-message", "title", message, string.Empty, DiagnosticSeverity.Error, true);
+            var diagnostic = Diagnostic.Create(diagnosticDescriptor, Location.None);
+            context.ReportDiagnostic(diagnostic);
+        }
+        
+        public static string GetGenericArgumentIdentifiers(this TypeDeclarationSyntax typeDeclaration)
+        {
+
+            if (typeDeclaration.TypeParameterList == null)
+            {
+                return string.Empty;
+            }
+            
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("<");
+            for (var index = 0; index < typeDeclaration.TypeParameterList.Parameters.Count - 1; index++)
+            {
+                var typeParam = typeDeclaration.TypeParameterList.Parameters[index];
+                stringBuilder.Append(typeParam.Identifier.ValueText);
+                stringBuilder.Append(", ");
+            }
+
+            stringBuilder.Append(typeDeclaration.TypeParameterList
+                .Parameters[typeDeclaration.TypeParameterList.Parameters.Count - 1].Identifier.ValueText);
+            stringBuilder.Append(">");
+
+            return stringBuilder.ToString();
+        }
+        
         public static SyntaxList<UsingDirectiveSyntax>? GetUsingDirectives(this SyntaxNode node)
         {
             var root = node.SyntaxTree.GetRoot() as CompilationUnitSyntax;

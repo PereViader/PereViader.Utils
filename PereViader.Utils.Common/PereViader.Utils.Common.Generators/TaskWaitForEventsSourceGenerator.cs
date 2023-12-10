@@ -28,7 +28,25 @@ namespace PereViader.Utils.Common.Generators
                     ?.Name
                     .ToString() ?? "PereViader.Utils.Common.Generators";
 
-                var className = candidate.TypeDeclarationSyntax.Identifier.Text;
+                string classTypeArgs = string.Empty;
+                string classTypeNameArgs = string.Empty;
+                if (candidate.TypeDeclarationSyntax.TypeParameterList != null)
+                {
+                    classTypeArgs = candidate.TypeDeclarationSyntax.GetGenericArgumentIdentifiers();
+                    classTypeNameArgs = classTypeArgs
+                        .Replace("<", "")
+                        .Replace(">", "")
+                        .Replace(" ", "")
+                        .Replace(",", "");
+
+                    //context.ReportDebugDiagnostic(classTypeArgs);
+                    //context.ReportDebugDiagnostic(classTypeNameArgs);
+                }
+                
+                var className = $"{candidate.TypeDeclarationSyntax.Identifier.Text}{classTypeArgs}";
+                //context.ReportDebugDiagnostic(className);
+
+                var classExtensionName = $"{candidate.TypeDeclarationSyntax.Identifier.Text}_{classTypeNameArgs}_GenerateTaskWaitForEventsAttributeExtensions";
                 var eventFields = candidate.TypeDeclarationSyntax
                     .DescendantNodes()
                     .OfType<EventFieldDeclarationSyntax>()
@@ -62,7 +80,7 @@ namespace PereViader.Utils.Common.Generators
 namespace {namespaceName}
 {{
     [System.CodeDom.Compiler.GeneratedCode(""PereViader.Utils.Common.Generators.TaskWaitForEventsSourceGenerator"", ""1.0.0.0"")]
-    public static class {className}Extensions
+    public static class {classExtensionName}
     {{");
                     
                 foreach (var eventField in eventFields)
@@ -71,7 +89,7 @@ namespace {namespaceName}
 
                     var eventNamedTypeSymbol = CodeGenerationExtensions.GetEventFieldDeclarationSyntaxDelegateNamedTypeSymbol(eventField, semanticModel);
                     var parameters = CodeGenerationExtensions.GetDelegateParameters(eventNamedTypeSymbol);
-                    
+
                     foreach (var eventVariable in eventField.Declaration.Variables)
                     {
                         var eventName = eventVariable.Identifier.Text;
@@ -105,7 +123,7 @@ namespace {namespaceName}
 
                         var generatedCode = $@"
 
-        public static Task{returnType} Wait{eventName}(this {className} o, CancellationToken ct = default)
+        public static Task{returnType} Wait{eventName}{classTypeArgs}(this {className} o, CancellationToken ct = default)
         {{
             if (ct.IsCancellationRequested)
             {{
@@ -135,7 +153,7 @@ namespace {namespaceName}
                 stringBuilder.Append(@"
     }
 }");
-                context.AddSource($"{className}.GenerateTaskWaitForEventsAttribute.GeneratedExtensions.cs", SourceText.From(stringBuilder.ToString(), Encoding.UTF8));
+                context.AddSource($"{classExtensionName}.cs", SourceText.From(stringBuilder.ToString(), Encoding.UTF8));
             }
         }
     }

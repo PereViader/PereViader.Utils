@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using PereViader.Utils.Common.Generators;
 
 namespace PereViader.Utils.Common.ActiveStatuses
 {
+    [GenerateEventTaskWaits]
     public sealed class ActiveStatus<TId>
     {
         public event Action<TId, bool> OnChanged;
