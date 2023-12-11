@@ -12,47 +12,44 @@ namespace PereViader.Utils.Common.Generators
     {
         public void Initialize(GeneratorInitializationContext context)
         {
-            context.RegisterForSyntaxNotifications(() => new TypeDeclarationWithAttributeSyntaxReceiver("GenerateEventTaskWaits"));
+            context.RegisterForSyntaxNotifications(() => new TypeDeclarationWithAttributeSyntaxReceiver<TypeDeclarationSyntax, TaskWaitForEventsSourceGenerator>("GenerateEventTaskWaits"));
         }
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!(context.SyntaxReceiver is TypeDeclarationWithAttributeSyntaxReceiver receiver))
+            
+            if (!(context.SyntaxReceiver is TypeDeclarationWithAttributeSyntaxReceiver<TypeDeclarationSyntax, TaskWaitForEventsSourceGenerator> receiver))
             {
                 return;
             }
             
             foreach (var candidate in receiver.Candidates)
             {
-                var namespaceName = CodeGenerationExtensions.GetNamespaceDeclarationSyntax(candidate.TypeDeclarationSyntax)
+                var namespaceName = CodeGenerationExtensions.GetNamespaceDeclarationSyntax(candidate.Declaration)
                     ?.Name
                     .ToString() ?? "PereViader.Utils.Common.Generators";
 
                 string classTypeArgs = string.Empty;
                 string classTypeNameArgs = string.Empty;
-                if (candidate.TypeDeclarationSyntax.TypeParameterList != null)
+                if (candidate.Declaration.TypeParameterList != null)
                 {
-                    classTypeArgs = candidate.TypeDeclarationSyntax.GetGenericArgumentIdentifiers();
+                    classTypeArgs = candidate.Declaration.GetGenericArgumentIdentifiers();
                     classTypeNameArgs = classTypeArgs
                         .Replace("<", "")
                         .Replace(">", "")
                         .Replace(" ", "")
                         .Replace(",", "");
-
-                    //context.ReportDebugDiagnostic(classTypeArgs);
-                    //context.ReportDebugDiagnostic(classTypeNameArgs);
                 }
                 
-                var className = $"{candidate.TypeDeclarationSyntax.Identifier.Text}{classTypeArgs}";
-                //context.ReportDebugDiagnostic(className);
+                var className = $"{candidate.Declaration.Identifier.Text}{classTypeArgs}";
 
-                var classExtensionName = $"{candidate.TypeDeclarationSyntax.Identifier.Text}_{classTypeNameArgs}_GenerateTaskWaitForEventsAttributeExtensions";
-                var eventFields = candidate.TypeDeclarationSyntax
+                var classExtensionName = $"{candidate.Declaration.Identifier.Text}_{classTypeNameArgs}_GenerateTaskWaitForEventsAttributeExtensions";
+                var eventFields = candidate.Declaration
                     .DescendantNodes()
                     .OfType<EventFieldDeclarationSyntax>()
                     .ToArray();
 
-                var usingStrings = candidate.TypeDeclarationSyntax.GetUsingDirectives();
+                var usingStrings = candidate.Declaration.GetUsingDirectives();
                 var usingDirectiveSet = new HashSet<string>()
                 {
                     "using System.Threading;",

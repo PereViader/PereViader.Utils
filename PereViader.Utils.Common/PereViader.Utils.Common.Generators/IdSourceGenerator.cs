@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
 namespace PereViader.Utils.Common.Generators
@@ -9,20 +10,20 @@ namespace PereViader.Utils.Common.Generators
     {
         public void Initialize(GeneratorInitializationContext context)
         {
-            context.RegisterForSyntaxNotifications(() => new StructDeclarationWithAttributeSyntaxReceiver("GenerateId"));
+            context.RegisterForSyntaxNotifications(() => new TypeDeclarationWithAttributeSyntaxReceiver<StructDeclarationSyntax, IdSourceGenerator>("GenerateId"));
         }
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!(context.SyntaxReceiver is StructDeclarationWithAttributeSyntaxReceiver receiver))
+            if (!(context.SyntaxReceiver is TypeDeclarationWithAttributeSyntaxReceiver<StructDeclarationSyntax, IdSourceGenerator> receiver))
             {
                 return;
             }
             
             foreach (var candidate in receiver.Candidates)
             {
-                var className = candidate.StructDeclarationSyntax.Identifier.Text;
-                var namespaceName = CodeGenerationExtensions.GetNamespaceDeclarationSyntax(candidate.StructDeclarationSyntax)
+                var className = candidate.Declaration.Identifier.Text;
+                var namespaceName = CodeGenerationExtensions.GetNamespaceDeclarationSyntax(candidate.Declaration)
                     ?.Name
                     .ToString() ?? "PereViader.Utils.Common.Generators";
 

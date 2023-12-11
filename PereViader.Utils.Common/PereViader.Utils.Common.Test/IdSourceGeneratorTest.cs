@@ -14,9 +14,9 @@ namespace PereViader.Utils.Common.Test
         [Test]
         public void GeneratedId_Compiles()
         {
-            _ = GeneratedId.Empty;
-            GeneratedId.New().ToGuid();
-            GeneratedId.FromGuid(Guid.NewGuid());
+            _ = TestId.Empty;
+            TestId.New().ToGuid();
+            TestId.FromGuid(Guid.NewGuid());
         }
     }
 }

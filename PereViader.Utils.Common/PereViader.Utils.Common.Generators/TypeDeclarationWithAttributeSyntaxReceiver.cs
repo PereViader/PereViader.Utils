@@ -4,9 +4,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PereViader.Utils.Common.Generators
 {
-    public class TypeDeclarationWithAttributeSyntaxReceiver : ISyntaxReceiver
+    public class TypeDeclarationWithAttributeSyntaxReceiver<TDeclaration, TGenerator> : ISyntaxReceiver
+        where TDeclaration : TypeDeclarationSyntax
     {
-        public List<(TypeDeclarationSyntax TypeDeclarationSyntax, AttributeSyntax AttributeSyntax)> Candidates { get; } = new List<(TypeDeclarationSyntax, AttributeSyntax)>();
+        public List<(TDeclaration Declaration, AttributeSyntax AttributeSyntax)> Candidates { get; } = new List<(TDeclaration, AttributeSyntax)>();
         public string AttributeName { get; }
 
         public TypeDeclarationWithAttributeSyntaxReceiver(string attributeName)
@@ -16,7 +17,7 @@ namespace PereViader.Utils.Common.Generators
 
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
         {
-            if (!(syntaxNode is TypeDeclarationSyntax declaration))
+            if (!(syntaxNode is TDeclaration declaration))
             {
                 return;
             }
