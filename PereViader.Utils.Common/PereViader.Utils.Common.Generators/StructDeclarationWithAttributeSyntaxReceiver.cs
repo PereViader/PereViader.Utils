@@ -4,19 +4,19 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PereViader.Utils.Common.Generators
 {
-    public class TypeDeclarationWithAttributeSyntaxReceiver : ISyntaxReceiver
+    public class StructDeclarationWithAttributeSyntaxReceiver : ISyntaxReceiver
     {
-        public List<(TypeDeclarationSyntax TypeDeclarationSyntax, AttributeSyntax AttributeSyntax)> Candidates { get; } = new List<(TypeDeclarationSyntax, AttributeSyntax)>();
+        public List<(StructDeclarationSyntax StructDeclarationSyntax, AttributeSyntax AttributeSyntax)> Candidates { get; } = new List<(StructDeclarationSyntax, AttributeSyntax)>();
         public string AttributeName { get; }
 
-        public TypeDeclarationWithAttributeSyntaxReceiver(string attributeName)
+        public StructDeclarationWithAttributeSyntaxReceiver(string attributeName)
         {
             AttributeName = attributeName;
         }
 
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
         {
-            if (!(syntaxNode is TypeDeclarationSyntax declaration))
+            if (!(syntaxNode is StructDeclarationSyntax declaration))
             {
                 return;
             }
