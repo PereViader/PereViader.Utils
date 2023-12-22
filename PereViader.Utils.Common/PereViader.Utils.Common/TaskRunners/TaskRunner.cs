@@ -10,8 +10,107 @@ namespace PereViader.Utils.Common.TaskRunners
 {
     public sealed class TaskRunner : IDisposable
     {
-        private readonly Queue<(CancellationToken cancellationToken, Func<CancellationToken, Task> func)> _taskSequenceQueue = 
-            new Queue<(CancellationToken cancellationToken, Func<CancellationToken, Task> func)>();
+        private interface ITaskRunnerQueueElement : IDisposable
+        {
+            Task Run();
+        }
+
+        private sealed class FuncTaskRunnerQueueElement : ITaskRunnerQueueElement
+        {
+            public Func<CancellationToken, Task> Func { get; }
+            
+            public TaskCompletionSource<object?>? TaskCompletionSource { get; }
+            public CancellationTokenSource CancellationTokenSource { get; }
+
+            public FuncTaskRunnerQueueElement(Func<CancellationToken, Task> func, TaskCompletionSource<object?>? taskCompletionSource, CancellationTokenSource cancellationTokenSource)
+            {
+                Func = func;
+                TaskCompletionSource = taskCompletionSource;
+                CancellationTokenSource = cancellationTokenSource;
+                TaskCompletionSource?.LinkCancellationToken(CancellationTokenSource.Token);
+            }
+            
+            public async Task Run()
+            {
+                if (CancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    TaskCompletionSource?.TrySetCanceled();
+                    return;
+                }
+
+                try
+                {
+                    await Func(CancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    TaskCompletionSource?.TrySetCanceled();
+                }
+                catch (Exception ex)
+                {
+                    TaskCompletionSource?.TrySetException(ex);
+                }
+                finally
+                {
+                    TaskCompletionSource?.TrySetResult(null);
+                }
+            }
+
+            public void Dispose()
+            {
+                CancellationTokenSource.Dispose();
+            }
+        }
+
+        private sealed class FuncWithStateTaskRunnerQueueElement<T> : ITaskRunnerQueueElement
+        {
+            public Func<T, CancellationToken, Task> Func { get; }
+            public T State { get; }
+            public TaskCompletionSource<object?>? TaskCompletionSource { get; }
+            public CancellationTokenSource CancellationTokenSource { get; }
+
+            public FuncWithStateTaskRunnerQueueElement(Func<T, CancellationToken, Task> func, T state, TaskCompletionSource<object?>? taskCompletionSource, CancellationTokenSource cancellationTokenSource)
+            {
+                Func = func;
+                State = state;
+                TaskCompletionSource = taskCompletionSource;
+                CancellationTokenSource = cancellationTokenSource;
+            }
+            
+            public async Task Run()
+            {
+                if (CancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    TaskCompletionSource?.TrySetCanceled();
+                    return;
+                }
+
+                try
+                {
+                    await Func(State, CancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    TaskCompletionSource?.TrySetCanceled();
+                }
+                catch (Exception ex)
+                {
+                    TaskCompletionSource?.TrySetException(ex);
+                }
+                finally
+                {
+                    TaskCompletionSource?.TrySetResult(null);
+                }
+            }
+
+            public void Dispose()
+            {
+                CancellationTokenSource.Dispose();
+            }
+        }
+        
+
+        private readonly Queue<ITaskRunnerQueueElement> _taskSequenceQueue = new Queue<ITaskRunnerQueueElement>();
 
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private bool _isRunning;
@@ -107,7 +206,8 @@ namespace PereViader.Utils.Common.TaskRunners
                 throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
 
-            _taskSequenceQueue.Enqueue((cancellationToken, func));
+            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
+            _taskSequenceQueue.Enqueue(new FuncTaskRunnerQueueElement(func, null, cancellationTokenSource));
             if (!_isRunning)
             {
                 ProcessSequenceQueue();
@@ -123,7 +223,8 @@ namespace PereViader.Utils.Common.TaskRunners
 
             foreach (var func in funcs)
             {
-                _taskSequenceQueue.Enqueue((cancellationToken, func));
+                var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
+                _taskSequenceQueue.Enqueue(new FuncTaskRunnerQueueElement(func, null, cancellationTokenSource));
             }
             
             if (!_isRunning)
@@ -139,19 +240,11 @@ namespace PereViader.Utils.Common.TaskRunners
                 throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
             
-            _taskSequenceQueue.Enqueue((cancellationToken, func));
             
-            using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
-                _cancellationTokenSource.Token, cancellationToken);
+            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
             var taskCompletionSource = cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<object?>();
-            
-            _taskSequenceQueue.Enqueue((cancellationToken, ct =>
-            {
-                ct.ThrowIfCancellationRequested();
-                taskCompletionSource.TrySetResult(null);
-                return Task.CompletedTask;
-            }));
-            
+            _taskSequenceQueue.Enqueue(new FuncTaskRunnerQueueElement(func, taskCompletionSource, cancellationTokenSource));
+
             if (!_isRunning)
             {
                 ProcessSequenceQueue();
@@ -160,10 +253,23 @@ namespace PereViader.Utils.Common.TaskRunners
             await taskCompletionSource.Task;
         }
         
-        public Task RunSequencedAndTrack<TArg>(Func<TArg, CancellationToken, Task> func, TArg arg, CancellationToken cancellationToken = default)
+        public async Task RunSequencedAndTrack<TArg>(Func<TArg, CancellationToken, Task> func, TArg arg, CancellationToken cancellationToken = default)
         {
-            // ReSharper disable once HeapView.CanAvoidClosure
-            return RunSequencedAndTrack(ct => func(arg, ct), cancellationToken);
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+            
+            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
+            var taskCompletionSource = cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<object?>();
+            _taskSequenceQueue.Enqueue(new FuncWithStateTaskRunnerQueueElement<TArg>(func, arg, taskCompletionSource, cancellationTokenSource));
+
+            if (!_isRunning)
+            {
+                ProcessSequenceQueue();
+            }
+
+            await taskCompletionSource.Task;
         }
         
         public async Task RunSequencedAndTrack(IEnumerable<Func<CancellationToken, Task>> funcs, CancellationToken cancellationToken = default)
@@ -172,22 +278,17 @@ namespace PereViader.Utils.Common.TaskRunners
             {
                 throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
             }
-            
+
+            CancellationTokenSource cancellationTokenSource;
             foreach (var func in funcs)
             {
-                _taskSequenceQueue.Enqueue((cancellationToken, func));
+                cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
+                _taskSequenceQueue.Enqueue(new FuncTaskRunnerQueueElement(func, null, cancellationTokenSource));
             }
             
-            using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
-                _cancellationTokenSource.Token, cancellationToken);
-            var taskCompletionSource = _cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<object?>();
-
-            _taskSequenceQueue.Enqueue((cancellationToken, ct =>
-            {
-                ct.ThrowIfCancellationRequested();
-                taskCompletionSource.TrySetResult(null);
-                return Task.CompletedTask;
-            }));
+            cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
+            var taskCompletionSource = cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<object?>();
+            _taskSequenceQueue.Enqueue(new FuncTaskRunnerQueueElement(DelegateExtensions.With<CancellationToken>.CompletedTaskWithArg1Func, taskCompletionSource, cancellationTokenSource));
             
             if (!_isRunning)
             {
@@ -213,23 +314,7 @@ namespace PereViader.Utils.Common.TaskRunners
                 while (_taskSequenceQueue.Count > 0)
                 {
                     var request = _taskSequenceQueue.Dequeue();
-
-                    if (request.cancellationToken.IsCancellationRequested)
-                    {
-                        continue;
-                    }
-                    
-                    using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
-                        token, 
-                        request.cancellationToken);
-                    
-                    try
-                    {
-                        await request.func(linkedCts.Token);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                    }
+                    await request.Run();
                 }
             }
             finally
