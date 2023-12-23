@@ -47,7 +47,7 @@ namespace PereViader.Utils.Common.Test
             using var cancellationTokenSource = new CancellationTokenSource();
             var taskCompletionSource = new TaskCompletionSource<object>();
 
-            var linkedTask = taskCompletionSource.Task.CreateLinkedTask(cancellationTokenSource.Token);
+            var linkedTask = taskCompletionSource.Task.WaitAsync(cancellationTokenSource.Token);
 
             taskCompletionSource.TrySetCanceled();
                 
@@ -60,7 +60,7 @@ namespace PereViader.Utils.Common.Test
             using var cancellationTokenSource = new CancellationTokenSource();
             var taskCompletionSource = new TaskCompletionSource<object>();
 
-            var linkedTask = taskCompletionSource.Task.CreateLinkedTask(cancellationTokenSource.Token);
+            var linkedTask = taskCompletionSource.Task.WaitAsync(cancellationTokenSource.Token);
 
             cancellationTokenSource.Cancel();
                 
@@ -73,7 +73,7 @@ namespace PereViader.Utils.Common.Test
             using var cancellationTokenSource = new CancellationTokenSource();
             var taskCompletionSource = new TaskCompletionSource<object>();
 
-            var linkedTask = taskCompletionSource.Task.CreateLinkedTask(cancellationTokenSource.Token);
+            var linkedTask = taskCompletionSource.Task.WaitAsync(cancellationTokenSource.Token);
 
             var result = new object();
             taskCompletionSource.TrySetResult(result);

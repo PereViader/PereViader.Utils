@@ -18,10 +18,10 @@ namespace PereViader.Utils.Common.ApplicationContexts
         public bool IsCompleteAllowed => _completeAllowedTaskCompletionSource.Task.IsCompleted;
 
         public Task WaitCompleteAllowed(CancellationToken ct) 
-            => _completeAllowedTaskCompletionSource.Task.CreateLinkedTask(ct);
+            => _completeAllowedTaskCompletionSource.Task.WaitAsync(ct);
         
         public Task WaitComplete(CancellationToken ct)
-            => CompleteTask.CreateLinkedTask(ct);
+            => CompleteTask.WaitAsync(ct);
 
         public void AllowComplete()
             => _completeAllowedTaskCompletionSource.TrySetResult(true);

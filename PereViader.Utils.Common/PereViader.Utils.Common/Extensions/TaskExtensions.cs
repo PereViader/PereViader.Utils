@@ -7,7 +7,7 @@ namespace PereViader.Utils.Common.Extensions
 {
     public static class TaskExtensions
     {
-        public static Task<T> CreateLinkedTask<T>(this Task<T> task, CancellationToken cancellationToken)
+        public static Task<T> WaitAsync<T>(this Task<T> task, CancellationToken cancellationToken)
         {
             if (!cancellationToken.CanBeCanceled || task.IsCompleted)
             {
@@ -24,7 +24,7 @@ namespace PereViader.Utils.Common.Extensions
                 .Unwrap();
         }
         
-        public static Task CreateLinkedTask(this Task task, CancellationToken cancellationToken)
+        public static Task WaitAsync(this Task task, CancellationToken cancellationToken)
         {
             if (!cancellationToken.CanBeCanceled || task.IsCompleted)
             {
