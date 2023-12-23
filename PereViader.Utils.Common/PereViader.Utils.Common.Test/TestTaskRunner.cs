@@ -63,14 +63,14 @@ public class TestTaskRunner
     }
     
     [Test]
-    public void RunSequencedAndTrack_OneTaskThenAnother_RunsFirstTaskThenTheOther()
+    public void RunSequenced_OneTaskThenAnother_RunsFirstTaskThenTheOther()
     {
         TaskCompletionSource<object?> tcs1 = null!;
         TaskCompletionSource<object?> tcs2 = null!;
         
         using var runner = new TaskRunner();
-        var task1 = runner.RunSequencedAndTrack(ct => (tcs1 = ct.CreateLinkedTaskCompletionSource<object?>()).Task);
-        var task2 = runner.RunSequencedAndTrack(ct => (tcs2 = ct.CreateLinkedTaskCompletionSource<object?>()).Task);
+        var task1 = runner.RunSequenced(ct => (tcs1 = ct.CreateLinkedTaskCompletionSource<object?>()).Task);
+        var task2 = runner.RunSequenced(ct => (tcs2 = ct.CreateLinkedTaskCompletionSource<object?>()).Task);
 
         Assert.That(task1.IsCompleted, Is.False);
 
@@ -85,14 +85,14 @@ public class TestTaskRunner
     }
     
     [Test]
-    public void RunSequencedAndTrack_AfterCanceling_RunsFine()
+    public void RunSequenced_AfterCanceling_RunsFine()
     {
         TaskCompletionSource<object?> tcs1 = null!;
         
         using var runner = new TaskRunner();
         
         runner.CancelRunning();
-        var task1 = runner.RunSequencedAndTrack(ct => (tcs1 = ct.CreateLinkedTaskCompletionSource<object?>()).Task);
+        var task1 = runner.RunSequenced(ct => (tcs1 = ct.CreateLinkedTaskCompletionSource<object?>()).Task);
 
         Assert.That(task1.IsCompleted, Is.False);
 
@@ -102,11 +102,11 @@ public class TestTaskRunner
     }
     
     [Test]
-    public void RunSequencedAndTrackThenCancel_BeforeAnyComplete_CancelsAllTasks()
+    public void RunSequencedThenCancel_BeforeAnyComplete_CancelsAllTasks()
     {
         using var runner = new TaskRunner();
-        var task1 = runner.RunSequencedAndTrack(ct => ct.CreateLinkedTask());
-        var task2 = runner.RunSequencedAndTrack(ct => ct.CreateLinkedTask());
+        var task1 = runner.RunSequenced(ct => ct.CreateLinkedTask());
+        var task2 = runner.RunSequenced(ct => ct.CreateLinkedTask());
 
         runner.CancelRunning();
 
@@ -115,12 +115,13 @@ public class TestTaskRunner
     }
 
     [Test]
-    public void RunSequencedAndForget_OnDisposedRunner_Throws()
+    public void RunSequenced_OnDisposedRunner_Throws()
     {
         var runner = new TaskRunner();
 
         runner.Dispose();
-        
-        Assert.Throws<ObjectDisposedException>(() => runner.RunSequencedAndForget(ct => ct.CreateLinkedTask()));
+
+        var task = runner.RunSequenced(ct => ct.CreateLinkedTask());
+        Assert.That(task.Exception?.InnerException, Is.InstanceOf<ObjectDisposedException>());
     }
 }

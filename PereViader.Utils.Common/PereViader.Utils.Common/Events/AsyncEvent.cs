@@ -45,7 +45,7 @@ namespace PereViader.Utils.Common.Events
             
             return Task.WhenAll(
                 _taskRunner.RunInstantly(_instantListeners, value, ct),
-                _taskRunner.RunSequencedAndTrack(_sequencedListeners, value, ct)
+                _taskRunner.RunSequenced(_sequencedListeners, value, stopOnFirstException: false, cancellationToken: ct)
             );
         }
 

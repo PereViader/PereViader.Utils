@@ -24,7 +24,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
         {
             var handle = new ApplicationContextChangeHandle();
             
-            _taskRunner.RunSequencedAndForget((ct) => DoPush(applicationContexts, handle, ct));
+            handle.CompleteTask = _taskRunner.RunSequenced((state, ct) => DoPush(state.applicationContexts, state.handle, ct), (applicationContexts, handle));
 
             return handle;
         }
@@ -61,7 +61,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
         {
             var handle = new ApplicationContextChangeHandle();
             
-            _taskRunner.RunSequencedAndForget((ct) => DoPopUntilThenPush(applicationContexts, predicate, handle, ct));
+            handle.CompleteTask =_taskRunner.RunSequenced((state, ct) => DoPopUntilThenPush(state.applicationContexts, state.predicate, state.handle, ct), (applicationContexts, predicate, handle));
 
             return handle;
         }
@@ -80,7 +80,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
         {
             var handle = new ApplicationContextChangeHandle();
             
-            _taskRunner.RunSequencedAndForget((ct) => DoPopUntil(predicate, handle, ct));
+            handle.CompleteTask =_taskRunner.RunSequenced((state, ct) => DoPopUntil(state.predicate, state.handle, ct), (predicate, handle));
 
             return handle;
         }

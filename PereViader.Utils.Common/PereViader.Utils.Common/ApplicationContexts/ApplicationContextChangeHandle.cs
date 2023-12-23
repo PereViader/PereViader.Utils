@@ -9,22 +9,22 @@ namespace PereViader.Utils.Common.ApplicationContexts
     {
         public event Action<ApplicationContextChangeStep> OnCurrentApplicationContextChangeStepUpdated;
         
-        private TaskCompletionSource<bool> _enterAllowedTaskCompletionSource = new TaskCompletionSource<bool>();
-        private TaskCompletionSource<bool> _completeTaskCompletionSource = new TaskCompletionSource<bool>();
+        private readonly TaskCompletionSource<bool> _completeAllowedTaskCompletionSource = new TaskCompletionSource<bool>();
+        public Task CompleteTask { get; set; }
 
         public ApplicationContextChangeStep CurrentApplicationContextChangeStep { get; private set; } =
             ApplicationContextChangeStep.WaitingToStart;
         
-        public bool IsCompleteAllowed => _enterAllowedTaskCompletionSource.Task.IsCompleted;
+        public bool IsCompleteAllowed => _completeAllowedTaskCompletionSource.Task.IsCompleted;
 
         public Task WaitCompleteAllowed(CancellationToken ct) 
-            => _enterAllowedTaskCompletionSource.Task.CreateLinkedTask(ct);
+            => _completeAllowedTaskCompletionSource.Task.CreateLinkedTask(ct);
         
         public Task WaitComplete(CancellationToken ct)
-            => _completeTaskCompletionSource.Task.CreateLinkedTask(ct);
+            => CompleteTask.CreateLinkedTask(ct);
 
         public void AllowComplete()
-            => _enterAllowedTaskCompletionSource.TrySetResult(true);
+            => _completeAllowedTaskCompletionSource.TrySetResult(true);
 
         public void UpdateStep(ApplicationContextChangeStep applicationContextChangeStep)
         {
@@ -37,11 +37,6 @@ namespace PereViader.Utils.Common.ApplicationContexts
             
             for (ApplicationContextChangeStep i = CurrentApplicationContextChangeStep + 1; i <= applicationContextChangeStep; i++)
             {
-                if(i == ApplicationContextChangeStep.Complete)
-                {
-                    _completeTaskCompletionSource.TrySetResult(true);
-                }
-                
                 CurrentApplicationContextChangeStep = i;
                 OnCurrentApplicationContextChangeStepUpdated?.Invoke(i);
             }
