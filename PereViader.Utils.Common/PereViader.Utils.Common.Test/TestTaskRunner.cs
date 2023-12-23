@@ -13,7 +13,7 @@ public class TestTaskRunner
         var taskCompletionSource = new TaskCompletionSource();
         using var runner = new TaskRunner();
         
-        var task = runner.RunInstantly((tcs, token) => tcs.Task, taskCompletionSource);
+        var task = runner.RunInstantly((tcs, _) => tcs.Task, taskCompletionSource);
         
         Assert.That(task, Is.EqualTo(taskCompletionSource.Task));
     }
@@ -25,7 +25,7 @@ public class TestTaskRunner
         using var runner = new TaskRunner();
         runner.CancelRunning();
         
-        var task = runner.RunInstantly((tcs, token) => tcs.Task, taskCompletionSource);
+        var task = runner.RunInstantly((tcs, _) => tcs.Task, taskCompletionSource);
         
         Assert.That(task, Is.EqualTo(taskCompletionSource.Task));
     }
@@ -39,7 +39,7 @@ public class TestTaskRunner
         
         Assert.Throws<ObjectDisposedException>(() =>
         {
-            _ = runner.RunInstantly(token => Task.CompletedTask);
+            _ = runner.RunInstantly(_ => Task.CompletedTask);
         });
     }
 
