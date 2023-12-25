@@ -9,11 +9,21 @@ public class TestActiveStatus
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void IsActive_OnElementWithNoCallsAndDefaultTrue_IsTheDefault(bool defaultState)
+    public void IsActive_OnElementWithNoCalls_IsTheDefault(bool defaultState)
     {
         var activeStatus = new ActiveStatus<int>(defaultState);
             
         Assert.That(activeStatus.IsActive(0), Is.EqualTo(defaultState));
+    }
+    
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void IsActiveWithOwner_OnElementWithNoCalls_IsTheDefault(bool defaultState)
+    {
+        var activeStatus = new ActiveStatus<int>(defaultState);
+            
+        Assert.That(activeStatus.IsActive(new object(), 0), Is.EqualTo(defaultState));
     }
         
     [Test]
@@ -23,9 +33,38 @@ public class TestActiveStatus
     {
         var activeStatus = new ActiveStatus<int>(defaultState);
 
-        activeStatus.UpdateStatus(new object(), 0, !defaultState);
+        activeStatus.Update(new object(), 0, !defaultState);
 
         Assert.That(activeStatus.IsActive(0), Is.EqualTo(!defaultState));
+    }
+    
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void IsActiveWithOwner_OnElementThatWasRegisteredAsTheContrary_IsTheContrary(bool defaultState)
+    {
+        var activeStatus = new ActiveStatus<int>(defaultState);
+
+        var owner = new object();
+        activeStatus.Update(owner, 0, !defaultState);
+
+        Assert.That(activeStatus.IsActive(owner, 0), Is.EqualTo(!defaultState));
+    }
+    
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public void Toggle_OnOwner_Reverses(bool defaultState)
+    {
+        var activeStatus = new ActiveStatus<int>(defaultState);
+
+        var owner = new object();
+        
+        activeStatus.Toggle(owner, 0);
+        Assert.That(activeStatus.IsActive(owner, 0), Is.EqualTo(!defaultState));
+        
+        activeStatus.Toggle(owner, 0);
+        Assert.That(activeStatus.IsActive(owner, 0), Is.EqualTo(defaultState));
     }
         
     [Test]
@@ -35,7 +74,7 @@ public class TestActiveStatus
     {
         var activeStatus = new ActiveStatus<int>(defaultState);
 
-        activeStatus.UpdateStatus(new object(), 0, !defaultState);
+        activeStatus.Update(new object(), 0, !defaultState);
         activeStatus.Forget(0);
 
         Assert.That(activeStatus.IsActive(0), Is.EqualTo(defaultState));
@@ -44,14 +83,14 @@ public class TestActiveStatus
     [Test]
     [TestCase(true)]
     [TestCase(false)]
-    public void UpdateStatus_ProperlyUpdatesStatusEachTime(bool defaultState)
+    public void Update_ProperlyUpdatesStatusEachTime(bool defaultState)
     {
         var activeStatus = new ActiveStatus<int>(defaultState);
 
-        var update1 = activeStatus.UpdateStatus(new object(), 0, defaultState);
-        var update2 = activeStatus.UpdateStatus(new object(), 0, !defaultState);
-        var update3 = activeStatus.UpdateStatus(new object(), 0, !defaultState);
-        var update4 = activeStatus.UpdateStatus(new object(), 0, defaultState);
+        var update1 = activeStatus.Update(new object(), 0, defaultState);
+        var update2 = activeStatus.Update(new object(), 0, !defaultState);
+        var update3 = activeStatus.Update(new object(), 0, !defaultState);
+        var update4 = activeStatus.Update(new object(), 0, defaultState);
         var isActive = activeStatus.IsActive(0);
 
         Assert.That(update1, Is.EqualTo(false));
