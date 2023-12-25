@@ -5,6 +5,7 @@
 
 # Ignore Common Plugin for Unity3d
 PereViader.Utils.Unity3d/Assets/Plugins/PereViader.Utils.Common
+PereViader.Utils.Unity3d/Assets/Plugins/TextMesh Pro
 
 
 # User-specific files
