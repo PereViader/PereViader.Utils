@@ -2,16 +2,18 @@
     "name": "PereViader.Utils.Unity3d.Editor",
     "rootNamespace": "PereViader.Utils.Unity3d.Editor",
     "references": [
-        "GUID:1541beb0ce7b30c4085171e1810bff66"
+        "GUID:0573ad29cf448f24088587c30f8afab2"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "PereViader.Utils.Common.dll"
+    ],
+    "autoReferenced": false,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

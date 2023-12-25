@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Ignore Common Plugin for Unity3d
+PereViader.Utils.Unity3d/Assets/Plugins/PereViader.Utils.Common
+
+
 # User-specific files
 *.rsuser
 *.suo
