@@ -44,19 +44,17 @@ namespace PereViader.Utils.Common.Extensions
             IEnumerable<Func<CancellationToken, Task>> taskFuncs,
             CancellationToken ct)
         {
-            using (var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(ct))
+            using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            var token = cancellationTokenSource.Token;
+            try
             {
-                var token = cancellationTokenSource.Token;
-                try
-                {
-                    await Task.WhenAny(
-                        taskFuncs.Select((x, t) => x.Invoke(t), token)
-                    );
-                }
-                finally
-                {
-                    cancellationTokenSource.Cancel();
-                }
+                await Task.WhenAny(
+                    taskFuncs.Select((x, t) => x.Invoke(t), token)
+                );
+            }
+            finally
+            {
+                cancellationTokenSource.Cancel();
             }
         }
         
@@ -64,20 +62,18 @@ namespace PereViader.Utils.Common.Extensions
             IEnumerable<Func<CancellationToken, Task<T>>> taskFuncs,
             CancellationToken ct)
         {
-            using (var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(ct))
+            using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            var token = cancellationTokenSource.Token;
+            try
             {
-                var token = cancellationTokenSource.Token;
-                try
-                {
-                    var task =  await Task.WhenAny(
-                        taskFuncs.Select((x,t) => x.Invoke(t), token)
-                    );
-                    return task.Result;
-                }
-                finally
-                {
-                    cancellationTokenSource.Cancel();
-                }
+                var task =  await Task.WhenAny(
+                    taskFuncs.Select((x,t) => x.Invoke(t), token)
+                );
+                return task.Result;
+            }
+            finally
+            {
+                cancellationTokenSource.Cancel();
             }
         }
     }

@@ -150,24 +150,22 @@ namespace PereViader.Utils.Common.Extensions
             TArg argument
         )
         {
-            using (IEnumerator<TSource> enumerator = source.GetEnumerator())
+            using IEnumerator<TSource> enumerator = source.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                while (enumerator.MoveNext())
-                {
-                    TSource element = enumerator.Current;
+                TSource element = enumerator.Current;
 
-                    if (!predicate(element, argument))
-                    {
-                        yield return element;
-                        break;
-                    }
-                }
-
-                while (enumerator.MoveNext())
+                if (!predicate(element, argument))
                 {
-                    TSource element = enumerator.Current;
                     yield return element;
+                    break;
                 }
+            }
+
+            while (enumerator.MoveNext())
+            {
+                TSource element = enumerator.Current;
+                yield return element;
             }
         }
         
@@ -175,24 +173,22 @@ namespace PereViader.Utils.Common.Extensions
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            using (IEnumerator<TSource> enumerator = source.GetEnumerator())
+            using IEnumerator<TSource> enumerator = source.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                while (enumerator.MoveNext())
-                {
-                    TSource element = enumerator.Current;
+                TSource element = enumerator.Current;
 
-                    if (predicate(element))
-                    {
-                        yield return element;
-                        break;
-                    }
-                }
-
-                while (enumerator.MoveNext())
+                if (predicate(element))
                 {
-                    TSource element = enumerator.Current;
                     yield return element;
+                    break;
                 }
+            }
+
+            while (enumerator.MoveNext())
+            {
+                TSource element = enumerator.Current;
+                yield return element;
             }
         }
         
@@ -202,24 +198,22 @@ namespace PereViader.Utils.Common.Extensions
             TArg argument
         )
         {
-            using (IEnumerator<TSource> enumerator = source.GetEnumerator())
+            using IEnumerator<TSource> enumerator = source.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                while (enumerator.MoveNext())
-                {
-                    TSource element = enumerator.Current;
+                TSource element = enumerator.Current;
 
-                    if (predicate(element, argument))
-                    {
-                        yield return element;
-                        break;
-                    }
-                }
-
-                while (enumerator.MoveNext())
+                if (predicate(element, argument))
                 {
-                    TSource element = enumerator.Current;
                     yield return element;
+                    break;
                 }
+            }
+
+            while (enumerator.MoveNext())
+            {
+                TSource element = enumerator.Current;
+                yield return element;
             }
         }
 
