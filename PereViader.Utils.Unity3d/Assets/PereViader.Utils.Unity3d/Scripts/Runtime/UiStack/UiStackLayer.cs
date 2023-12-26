@@ -3,8 +3,6 @@ namespace PereViader.Utils.Unity3d.UiStack
     public class UiStackLayer
     {
         public static readonly UiStackLayer DefaultLayer = new ("Default");
-        public static readonly UiStackLayer PopupLayer = new("Popup");
-        public static readonly UiStackLayer LoadingLayer = new("Loading");
         
         public string Name { get; }
 
@@ -13,6 +11,6 @@ namespace PereViader.Utils.Unity3d.UiStack
             Name = name;
         }
 
-        public static UiStackLayer[] CreateDefaultLayers() => new [] { DefaultLayer, PopupLayer, LoadingLayer };
+        public static UiStackLayer[] CreateDefaultLayers() => new [] { DefaultLayer };
     }
 }
