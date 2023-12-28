@@ -72,7 +72,7 @@ namespace PereViader.Utils.Common.Collections
 
         public bool ContainsKey(TKey key) => _keyToValue.ContainsKey(key);
 
-        public bool ContainsKey(TValue value) => _valueToKey.ContainsKey(value);
+        public bool ContainsValue(TValue value) => _valueToKey.ContainsKey(value);
         
         public bool Remove(TKey key)
         {
