@@ -40,7 +40,7 @@ namespace PereViader.Utils.Common.Extensions
 
             if (nextCandidate is null)
             {
-                matchedPairs = default;
+                matchedPairs = default!;
                 return false;
             }
 
@@ -59,7 +59,7 @@ namespace PereViader.Utils.Common.Extensions
 
                     if (decisionStack.Count == 0)
                     {
-                        matchedPairs = default;
+                        matchedPairs = default!;
                         return false;
                     }
                 }

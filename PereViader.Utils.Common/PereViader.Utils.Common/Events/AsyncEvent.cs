@@ -8,7 +8,7 @@ namespace PereViader.Utils.Common.Events
 {
     public sealed class AsyncEvent<T> : IAsyncEvent<T>
     {
-        public event Action<T> OnEvent;
+        public event Action<T>? OnEvent;
         
         private readonly List<Func<T, CancellationToken, Task>> _instantListeners = new List<Func<T, CancellationToken, Task>>();
         private readonly List<Func<T, CancellationToken, Task>> _sequencedListeners = new List<Func<T, CancellationToken, Task>>();

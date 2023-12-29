@@ -9,8 +9,8 @@ namespace PereViader.Utils.Common.ApplicationContexts
 {
     public class ApplicationContextService : IApplicationContextService
     {
-        public event Action OnBeginApplicationContextChange;
-        public event Action OnFinishApplicationContextChange;
+        public event Action? OnBeginApplicationContextChange;
+        public event Action? OnFinishApplicationContextChange;
         
         private readonly Stack<IApplicationContext> _contextStack = new Stack<IApplicationContext>();
         private readonly TaskRunner _taskRunner = new TaskRunner();
@@ -24,14 +24,14 @@ namespace PereViader.Utils.Common.ApplicationContexts
         {
             var handle = new ApplicationContextChangeHandle();
             
-            handle.CompleteTask = _taskRunner.RunSequenced((state, ct) => DoPush(state.applicationContexts, state.handle, ct), (applicationContexts, handle));
+            handle.CompleteTask = _taskRunner.RunSequenced((state, ct) => state.service.DoPush(state.applicationContexts, state.handle, ct), (applicationContexts, handle, service: this));
 
             return handle;
         }
 
         public IApplicationContextChangeHandle Pop()
         {
-            var predicate = DelegateExtensions.With<IApplicationContext>.TrueAfterNCallsPredicate(1);
+            var predicate = DelegateExtensions.With<IApplicationContext?>.TrueAfterNCallsPredicate(1);
             return PopUntil(predicate);
         }
 
@@ -42,26 +42,26 @@ namespace PereViader.Utils.Common.ApplicationContexts
 
         public IApplicationContextChangeHandle PopThenPush(IApplicationContext applicationContext)
         {
-            var predicate = DelegateExtensions.With<IApplicationContext>.TrueAfterNCallsPredicate(1);
+            var predicate = DelegateExtensions.With<IApplicationContext?>.TrueAfterNCallsPredicate(1);
             return PopUntilThenPush(applicationContext, predicate);
         }
 
         public IApplicationContextChangeHandle PopThenPush(IEnumerable<IApplicationContext> applicationContexts)
         {
-            var predicate = DelegateExtensions.With<IApplicationContext>.TrueAfterNCallsPredicate(1);
+            var predicate = DelegateExtensions.With<IApplicationContext?>.TrueAfterNCallsPredicate(1);
             return PopUntilThenPush(applicationContexts, predicate);        
         }
 
-        public IApplicationContextChangeHandle PopUntilThenPush(IApplicationContext applicationContext, Predicate<IApplicationContext> predicate)
+        public IApplicationContextChangeHandle PopUntilThenPush(IApplicationContext applicationContext, Predicate<IApplicationContext?> predicate)
         {
             return PopUntilThenPush(new[] { applicationContext }, predicate);
         }
 
-        public IApplicationContextChangeHandle PopUntilThenPush(IEnumerable<IApplicationContext> applicationContexts, Predicate<IApplicationContext> predicate)
+        public IApplicationContextChangeHandle PopUntilThenPush(IEnumerable<IApplicationContext> applicationContexts, Predicate<IApplicationContext?> predicate)
         {
             var handle = new ApplicationContextChangeHandle();
             
-            handle.CompleteTask =_taskRunner.RunSequenced((state, ct) => DoPopUntilThenPush(state.applicationContexts, state.predicate, state.handle, ct), (applicationContexts, predicate, handle));
+            handle.CompleteTask =_taskRunner.RunSequenced((state, ct) => state.service.DoPopUntilThenPush(state.applicationContexts, state.predicate, state.handle, ct), (applicationContexts, predicate, handle, service: this));
 
             return handle;
         }
@@ -76,11 +76,11 @@ namespace PereViader.Utils.Common.ApplicationContexts
             return PopUntilThenPush(applicationContexts, x => x is T);
         }
 
-        public IApplicationContextChangeHandle PopUntil(Predicate<IApplicationContext> predicate)
+        public IApplicationContextChangeHandle PopUntil(Predicate<IApplicationContext?> predicate)
         {
             var handle = new ApplicationContextChangeHandle();
             
-            handle.CompleteTask =_taskRunner.RunSequenced((state, ct) => DoPopUntil(state.predicate, state.handle, ct), (predicate, handle));
+            handle.CompleteTask =_taskRunner.RunSequenced((state, ct) => state.service.DoPopUntil(state.predicate, state.handle, ct), (predicate, handle, service: this));
 
             return handle;
         }
@@ -101,7 +101,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
             OnFinishApplicationContextChange?.Invoke();
         }
         
-        private async Task DoPopUntil(Predicate<IApplicationContext> predicate, ApplicationContextChangeHandle handle, CancellationToken cancellationToken)
+        private async Task DoPopUntil(Predicate<IApplicationContext?> predicate, ApplicationContextChangeHandle handle, CancellationToken cancellationToken)
         {
             OnBeginApplicationContextChange?.Invoke();
 
@@ -122,7 +122,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
         
         private async Task DoPopUntilThenPush(
             IEnumerable<IApplicationContext> applicationContexts,
-            Predicate<IApplicationContext> predicate,
+            Predicate<IApplicationContext?> predicate,
             ApplicationContextChangeHandle handle,
             CancellationToken cancellationToken)
         {
@@ -132,7 +132,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
             OnFinishApplicationContextChange?.Invoke();
         }
 
-        private async Task DoSharedPop(Predicate<IApplicationContext> predicate, ApplicationContextChangeHandle handle,
+        private async Task DoSharedPop(Predicate<IApplicationContext?> predicate, ApplicationContextChangeHandle handle,
             CancellationToken cancellationToken)
         {
             handle.UpdateStep(ApplicationContextChangeStep.ProcessingPrevious);

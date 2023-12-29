@@ -12,7 +12,7 @@ namespace PereViader.Utils.Common.DiscriminatedUnions
         public bool HasSecond => _index == 1;
         public int Index => _index;
 
-        private OneOf(int index, TFirst first = default, TSecond second = default)
+        private OneOf(int index, TFirst first = default!, TSecond second = default!)
         {
             _index = index;
             _first = first;
@@ -91,7 +91,7 @@ namespace PereViader.Utils.Common.DiscriminatedUnions
         public bool HasThird => _index == 2;
         public int Index => _index;
 
-        private OneOf(int index, TFirst first = default, TSecond second = default, TThird third = default)
+        private OneOf(int index, TFirst first = default!, TSecond second = default!, TThird third = default!)
         {
             _index = index;
             _first = first;

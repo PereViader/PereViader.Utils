@@ -15,7 +15,7 @@ namespace PereViader.Utils.Common.Generators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!(context.SyntaxReceiver is TypeDeclarationWithAttributeSyntaxReceiver<StructDeclarationSyntax, IdSourceGenerator> receiver))
+            if (context.SyntaxReceiver is not TypeDeclarationWithAttributeSyntaxReceiver<StructDeclarationSyntax, IdSourceGenerator> receiver)
             {
                 return;
             }

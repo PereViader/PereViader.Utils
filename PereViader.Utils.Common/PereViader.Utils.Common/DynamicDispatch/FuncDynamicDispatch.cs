@@ -4,14 +4,12 @@ namespace PereViader.Utils.Common.DynamicDispatch
 {
     public sealed class FuncDynamicDispatch<TObj, TResult>
     {
-        readonly DynamicDispatchStore<Func<TObj, TResult>> _store = new DynamicDispatchStore<Func<TObj, TResult>>();
+        private readonly DynamicDispatchStore<Func<TObj, TResult>> _store = new DynamicDispatchStore<Func<TObj, TResult>>();
 
         public void Register<TConcrete>(Func<TConcrete, TResult> func)
             where TConcrete : TObj
         {
-            TResult InverseFunc(
-                TObj obj) =>
-                func.Invoke((TConcrete)obj);
+            TResult InverseFunc(TObj obj) => func.Invoke((TConcrete)obj!);
 
             _store[typeof(TConcrete)] = InverseFunc;
         }
@@ -31,9 +29,9 @@ namespace PereViader.Utils.Common.DynamicDispatch
             out TResult result,
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj.GetType(), checkAssignableTypes, out var func))
+            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var func))
             {
-                result = default;
+                result = default!;
                 return false;
             }
 
@@ -44,7 +42,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
 
     public sealed class FuncDynamicDispatch<TObj, TArg1, TResult>
     {
-        readonly DynamicDispatchStore<Func<TObj, TArg1, TResult>> _store = new DynamicDispatchStore<Func<TObj, TArg1, TResult>>();
+        private readonly DynamicDispatchStore<Func<TObj, TArg1, TResult>> _store = new DynamicDispatchStore<Func<TObj, TArg1, TResult>>();
 
         public void Register<TConcrete>(Func<TConcrete, TArg1, TResult> func)
             where TConcrete : TObj
@@ -52,7 +50,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
             TResult InverseFunc(
                 TObj obj,
                 TArg1 arg1
-                ) => func.Invoke((TConcrete)obj, arg1);
+                ) => func.Invoke((TConcrete)obj!, arg1);
 
             _store[typeof(TConcrete)] = InverseFunc;
         }
@@ -76,9 +74,9 @@ namespace PereViader.Utils.Common.DynamicDispatch
             out TResult result,
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj.GetType(), checkAssignableTypes, out var func))
+            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var func))
             {
-                result = default;
+                result = default!;
                 return false;
             }
 

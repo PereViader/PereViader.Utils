@@ -47,7 +47,7 @@ namespace PereViader.Utils.Common.Generators
             return root?.Usings;
         }
         
-        public static NamespaceDeclarationSyntax GetNamespaceDeclarationSyntax(SyntaxNode node)
+        public static NamespaceDeclarationSyntax? GetNamespaceDeclarationSyntax(SyntaxNode node)
         {
             // Attention: Unity is not compatible with this, not adding support for now.
             
@@ -65,7 +65,7 @@ namespace PereViader.Utils.Common.Generators
             return namespaceDeclaration;
         }
         
-        public static INamedTypeSymbol GetEventFieldDeclarationSyntaxDelegateNamedTypeSymbol(EventFieldDeclarationSyntax eventFieldSyntax, SemanticModel semanticModel)
+        public static INamedTypeSymbol? GetEventFieldDeclarationSyntaxDelegateNamedTypeSymbol(EventFieldDeclarationSyntax eventFieldSyntax, SemanticModel semanticModel)
         {
             // Assuming there's only one variable in the declaration.
             // For multiple variables, you need to handle each separately.
@@ -87,12 +87,7 @@ namespace PereViader.Utils.Common.Generators
         
         public static ImmutableArray<IParameterSymbol> GetDelegateParameters(INamedTypeSymbol delegateSymbol)
         {
-            if (delegateSymbol == null || delegateSymbol.DelegateInvokeMethod == null)
-            {
-                return ImmutableArray<IParameterSymbol>.Empty;
-            }
-
-            return delegateSymbol.DelegateInvokeMethod.Parameters;
+            return delegateSymbol.DelegateInvokeMethod?.Parameters ?? ImmutableArray<IParameterSymbol>.Empty;
         }
     }
 }

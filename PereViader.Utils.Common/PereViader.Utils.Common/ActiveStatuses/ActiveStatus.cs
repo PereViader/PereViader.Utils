@@ -7,7 +7,7 @@ namespace PereViader.Utils.Common.ActiveStatuses
     [GenerateEventTaskWaits]
     public sealed class ActiveStatus
     {
-        public event Action<bool> OnChanged;
+        public event Action<bool>? OnChanged;
 
         private readonly HashSet<object> _registry = new HashSet<object>();
 
@@ -67,7 +67,7 @@ namespace PereViader.Utils.Common.ActiveStatuses
     [GenerateEventTaskWaits]
     public sealed class ActiveStatus<TId>
     {
-        public event Action<TId, bool> OnChanged;
+        public event Action<TId, bool>? OnChanged;
 
         private readonly Dictionary<TId, HashSet<object>> _activeStatuses = new Dictionary<TId, HashSet<object>>();
 

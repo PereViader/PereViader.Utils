@@ -9,7 +9,7 @@ namespace PereViader.Utils.Common.Extensions
         //TODO: Missing FindLast
         //TODO: Missing FindLastIndex
         
-        public static T Find<T>(this IReadOnlyList<T> list, Func<T, bool> match)
+        public static T? Find<T>(this IReadOnlyList<T> list, Func<T, bool> match)
         {
             for (int i = 0; i < list.Count; i++)
             {
@@ -22,8 +22,8 @@ namespace PereViader.Utils.Common.Extensions
 
             return default;
         }
-        
-        public static T Find<T, TArg>(this IReadOnlyList<T> list, Func<T, TArg, bool> match, TArg arg)
+
+        public static T? Find<T, TArg>(this IReadOnlyList<T> list, Func<T, TArg, bool> match, TArg arg)
         {
             for (int i = 0; i < list.Count; i++)
             {

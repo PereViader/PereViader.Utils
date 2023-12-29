@@ -22,12 +22,12 @@ namespace PereViader.Utils.Common.Optionals
             
             return new Optional<T>(value, true);
         }
-        
+
         public static Optional<T> Maybe(T value, bool hasValue)
         {
             if (!hasValue)
             {
-                return Optional<T>.None;
+                return None;
             }
             
             return Some(value);

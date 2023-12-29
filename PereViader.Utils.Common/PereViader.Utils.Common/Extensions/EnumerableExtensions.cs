@@ -140,7 +140,7 @@ namespace PereViader.Utils.Common.Extensions
                 }
             }
 
-            value = default;
+            value = default!;
             return false;
         }
         

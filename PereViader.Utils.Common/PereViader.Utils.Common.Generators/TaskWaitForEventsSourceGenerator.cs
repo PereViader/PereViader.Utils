@@ -17,7 +17,6 @@ namespace PereViader.Utils.Common.Generators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            
             if (!(context.SyntaxReceiver is TypeDeclarationWithAttributeSyntaxReceiver<TypeDeclarationSyntax, TaskWaitForEventsSourceGenerator> receiver))
             {
                 return;
@@ -49,7 +48,7 @@ namespace PereViader.Utils.Common.Generators
                     .OfType<EventFieldDeclarationSyntax>()
                     .ToArray();
 
-                var usingStrings = candidate.Declaration.GetUsingDirectives();
+                var usingStrings = candidate.Declaration.GetUsingDirectives() ?? new SyntaxList<UsingDirectiveSyntax>();
                 var usingDirectiveSet = new HashSet<string>()
                 {
                     "using System.Threading;",
@@ -85,7 +84,7 @@ namespace {namespaceName}
                     var semanticModel = context.Compilation.GetSemanticModel(eventField.SyntaxTree);
 
                     var eventNamedTypeSymbol = CodeGenerationExtensions.GetEventFieldDeclarationSyntaxDelegateNamedTypeSymbol(eventField, semanticModel);
-                    var parameters = CodeGenerationExtensions.GetDelegateParameters(eventNamedTypeSymbol);
+                    var parameters = CodeGenerationExtensions.GetDelegateParameters(eventNamedTypeSymbol!);
 
                     foreach (var eventVariable in eventField.Declaration.Variables)
                     {
@@ -98,7 +97,7 @@ namespace {namespaceName}
 
                         if (parameters.Length == 0)
                         {
-                            internalReturnType = "<object>";
+                            internalReturnType = "<object?>";
                             returnType = string.Empty;
                             setResultArgs = "null";
                             paramType = "()";

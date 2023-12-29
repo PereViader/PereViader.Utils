@@ -11,7 +11,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
         {
             void InverseAction(
                 TObj obj) =>
-                action.Invoke((TConcrete)obj);
+                action.Invoke((TConcrete)obj!);
 
             _store[typeof(TConcrete)] = InverseAction;
         }
@@ -28,7 +28,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
             TObj obj, 
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj.GetType(), checkAssignableTypes, out var action))
+            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var action))
             {
                 return false;
             }
@@ -48,7 +48,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
             void InverseAction(
                 TObj obj,
                 TArg1 arg1
-                ) => action.Invoke((TConcrete)obj, arg1);
+                ) => action.Invoke((TConcrete)obj!, arg1);
 
             _store[typeof(TConcrete)] = InverseAction;
         }
@@ -66,7 +66,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
             TArg1 arg1, 
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj.GetType(), checkAssignableTypes, out var action))
+            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var action))
             {
                 return false;
             }

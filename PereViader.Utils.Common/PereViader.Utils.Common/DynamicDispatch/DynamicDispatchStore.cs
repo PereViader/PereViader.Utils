@@ -36,7 +36,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
                 }
             }
 
-            assignableKeyType = default;
+            assignableKeyType = default!;
             return false;
         }
 

@@ -53,14 +53,14 @@ namespace PereViader.Utils.Common.Optionals
                 : func.Invoke();
         }
         
-        public static T GetValueOrDefault<T>(this Optional<T> optional, T defaulValue = default)
+        public static T GetValueOrDefault<T>(this Optional<T> optional, T defaultValue = default!)
         {
             if (optional.TryGetValue(out var value))
             {
                 return value;
             }
             
-            return defaulValue;
+            return defaultValue;
         }
         
         public static T GetValueOrDefault<T>(this Optional<T> optional, Func<T> func)

@@ -7,10 +7,10 @@ namespace PereViader.Utils.Common.ApplicationContexts
 {
     public class ApplicationContextChangeHandle : IApplicationContextChangeHandle
     {
-        public event Action<ApplicationContextChangeStep> OnCurrentApplicationContextChangeStepUpdated;
+        public event Action<ApplicationContextChangeStep>? OnCurrentApplicationContextChangeStepUpdated;
         
         private readonly TaskCompletionSource<bool> _completeAllowedTaskCompletionSource = new TaskCompletionSource<bool>();
-        public Task CompleteTask { get; set; }
+        public Task CompleteTask { get; set; } = default!; // Must be initialized via property after creation
 
         public ApplicationContextChangeStep CurrentApplicationContextChangeStep { get; private set; } =
             ApplicationContextChangeStep.WaitingToStart;

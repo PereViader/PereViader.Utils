@@ -13,13 +13,13 @@ namespace PereViader.Utils.Common.ApplicationContexts
         IApplicationContextChangeHandle Push(IApplicationContext applicationContext);
         IApplicationContextChangeHandle Push(IEnumerable<IApplicationContext> applicationContexts);
         IApplicationContextChangeHandle Pop();
-        IApplicationContextChangeHandle PopUntil(Predicate<IApplicationContext> predicate);
+        IApplicationContextChangeHandle PopUntil(Predicate<IApplicationContext?> predicate);
         IApplicationContextChangeHandle PopUntil<T>() where T : IApplicationContext;
         
         IApplicationContextChangeHandle PopThenPush(IApplicationContext applicationContext);
         IApplicationContextChangeHandle PopThenPush(IEnumerable<IApplicationContext> applicationContexts);
-        IApplicationContextChangeHandle PopUntilThenPush(IApplicationContext applicationContext, Predicate<IApplicationContext> predicate);
-        IApplicationContextChangeHandle PopUntilThenPush(IEnumerable<IApplicationContext> applicationContexts, Predicate<IApplicationContext> predicate);
+        IApplicationContextChangeHandle PopUntilThenPush(IApplicationContext applicationContext, Predicate<IApplicationContext?> predicate);
+        IApplicationContextChangeHandle PopUntilThenPush(IEnumerable<IApplicationContext> applicationContexts, Predicate<IApplicationContext?> predicate);
         IApplicationContextChangeHandle PopUntilThenPush<T>(IApplicationContext applicationContext) where T : IApplicationContext;
         IApplicationContextChangeHandle PopUntilThenPush<T>(IEnumerable<IApplicationContext> applicationContexts) where T : IApplicationContext;
     }
