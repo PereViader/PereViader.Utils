@@ -6,6 +6,7 @@
         <IsRoslynComponent>true</IsRoslynComponent>
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
+        <WarningsAsErrors>Nullable</WarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
