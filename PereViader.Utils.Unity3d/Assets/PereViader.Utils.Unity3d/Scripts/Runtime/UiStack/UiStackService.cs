@@ -12,7 +12,7 @@ namespace PereViader.Utils.Unity3d.UiStack
     [Experimental]
     public sealed class UiStackService : IUiStackService
     {
-        public ActiveStatus InteractableActiveStatus { get; } = new ActiveStatus(defaultActiveState: true);
+        public ActiveStatus InteractableActiveStatus { get; } = new (defaultActiveState: true);
 
         public IReadOnlyDictionary<UiStackLayer, ActiveStatus> LayerInteractableActiveStatus { get; }
 
@@ -20,7 +20,7 @@ namespace PereViader.Utils.Unity3d.UiStack
         
         private readonly Dictionary<UiStackLayer, Transform> _layerParents = new ();
         private readonly Dictionary<UiStackElement, Transform> _uiStackElementFormerParents = new ();
-        private readonly TaskRunner _taskRunner = new TaskRunner();
+        private readonly TaskRunner _taskRunner = new ();
 
         public UiStackService(Transform rootTransform, IReadOnlyList<UiStackLayer> uiStackLayers)
         {
@@ -55,6 +55,8 @@ namespace PereViader.Utils.Unity3d.UiStack
 
         public void Register(UiStackElement uiStackElement)
         {
+            uiStackElement.Transform.gameObject.SetActive(false);
+            
             var layerParent = _layerParents[uiStackElement.UiStackLayer];
             
             _uiStackElementFormerParents[uiStackElement] = uiStackElement.Transform.parent;
@@ -68,6 +70,8 @@ namespace PereViader.Utils.Unity3d.UiStack
 
         public void Unregister(UiStackElement uiStackElement)
         {
+            uiStackElement.Transform.gameObject.SetActive(false);
+
             var formerParent = _uiStackElementFormerParents[uiStackElement];
             
             uiStackElement.Transform.SetParent(formerParent, worldPositionStays: false);
@@ -102,9 +106,15 @@ namespace PereViader.Utils.Unity3d.UiStack
             if (visible)
             {
                 uiStackElement.Transform.SetAsLastSibling();
+                uiStackElement.Transform.gameObject.SetActive(true);
             }
 
             await uiStackElement.SetUiStackElementVisibleDelegate(visible, instantly, cancellationToken);
+            
+            if (!visible)
+            {
+                uiStackElement.Transform.gameObject.SetActive(false);
+            }
         }
     }
 }

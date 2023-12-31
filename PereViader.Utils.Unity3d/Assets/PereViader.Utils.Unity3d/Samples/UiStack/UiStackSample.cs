@@ -24,10 +24,6 @@ namespace PereViader.Utils.Unity3d.Samples.UiStack
             
             _screen2 = Object.Instantiate(Screen2Prefab);
             _uiStackService.Register(_screen2.UiStackElement);
-
-            _uiStackService.Hide(_screen1.UiStackElement, true, CancellationToken.None).RunAsync();
-            _uiStackService.Hide(_screen2.UiStackElement, true, CancellationToken.None).RunAsync();
-            _uiStackService.Show(_screen1.UiStackElement, true, CancellationToken.None).RunAsync();
         }
 
         public void Update()
