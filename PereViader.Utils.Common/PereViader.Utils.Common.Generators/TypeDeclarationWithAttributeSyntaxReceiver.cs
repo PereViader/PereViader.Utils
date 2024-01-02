@@ -7,7 +7,7 @@ namespace PereViader.Utils.Common.Generators
     public class TypeDeclarationWithAttributeSyntaxReceiver<TDeclaration, TGenerator> : ISyntaxReceiver
         where TDeclaration : TypeDeclarationSyntax
     {
-        public List<(TDeclaration Declaration, AttributeSyntax AttributeSyntax)> Candidates { get; } = new List<(TDeclaration, AttributeSyntax)>();
+        public List<(TDeclaration Declaration, AttributeSyntax AttributeSyntax)> Candidates { get; } = new ();
         public string AttributeName { get; }
 
         public TypeDeclarationWithAttributeSyntaxReceiver(string attributeName)

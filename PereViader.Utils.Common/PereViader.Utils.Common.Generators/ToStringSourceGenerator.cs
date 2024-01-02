@@ -65,6 +65,5 @@ namespace {symbol.ContainingNamespace.ToDisplayString()}
                     SourceText.From(sourceBuilder.ToString(), Encoding.UTF8));
             }
         }
-
     }
 }

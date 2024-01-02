@@ -9,7 +9,7 @@ public partial struct TestId
 }
 
 [TestFixture]
-public class IdSourceGeneratorTest
+public class TestIdSourceGenerator
 {
     [Test]
     public void GeneratedId_Compiles()

@@ -4,7 +4,7 @@ using PereViader.Utils.Common.Extensions;
 namespace PereViader.Utils.Common.Test;
 
 [TestFixture]
-public class ReadOnlyListExtensionsTests
+public class TestReadOnlyListExtensions
 {
     [Test]
     public void Find_ReturnsMatchingElement()

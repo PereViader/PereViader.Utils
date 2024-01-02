@@ -30,10 +30,10 @@ public partial class GenerateToStringClass2
 }
 
 [TestFixture]
-public class GenerateToStringTest
+public class TestGenerateToString
 {
     [Test]
-    public void TestGenerateToString()
+    public void ToString_WorksAsExpected()
     {
         var someClass = new GenerateToStringClass1(1, "2", new GenerateToStringClass2(3.3f));
         Assert.That(someClass.ToString(), Is.EqualTo("[ A:1, B:2, SomeChild:[ C:3,3 ] ]"));
