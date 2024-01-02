@@ -17,16 +17,21 @@ namespace PereViader.Utils.Common.Generators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!(context.SyntaxReceiver is TypeDeclarationWithAttributeSyntaxReceiver<TypeDeclarationSyntax, TaskWaitForEventsSourceGenerator> receiver))
+            if (context.SyntaxReceiver is not TypeDeclarationWithAttributeSyntaxReceiver<TypeDeclarationSyntax, TaskWaitForEventsSourceGenerator> receiver)
             {
                 return;
             }
             
             foreach (var candidate in receiver.Candidates)
             {
-                var namespaceName = CodeGenerationExtensions.GetNamespaceDeclarationSyntax(candidate.Declaration)
-                    ?.Name
-                    .ToString() ?? "PereViader.Utils.Common.Generators";
+                var model = context.Compilation.GetSemanticModel(candidate.Declaration.SyntaxTree);
+                var symbol = model.GetDeclaredSymbol(candidate.Declaration);
+                if (symbol is null)
+                {
+                    continue;
+                }
+                
+                var namespaceName = symbol.ContainingNamespace?.ToDisplayString() ?? "PereViader.Utils.Common.Generators";
 
                 string classTypeArgs = string.Empty;
                 string classTypeNameArgs = string.Empty;

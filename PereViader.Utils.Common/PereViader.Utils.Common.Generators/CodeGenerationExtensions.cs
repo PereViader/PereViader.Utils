@@ -46,25 +46,7 @@ namespace PereViader.Utils.Common.Generators
             var root = node.SyntaxTree.GetRoot() as CompilationUnitSyntax;
             return root?.Usings;
         }
-        
-        public static NamespaceDeclarationSyntax? GetNamespaceDeclarationSyntax(SyntaxNode node)
-        {
-            // Attention: Unity is not compatible with this, not adding support for now.
-            
-            // Check for file-scoped namespace
-            // var root = node.SyntaxTree.GetRoot() as CompilationUnitSyntax;
-            // var fileScopedNamespace = root?.Members.OfType<FileScopedNamespaceDeclarationSyntax>().FirstOrDefault();
-            //
-            // if (fileScopedNamespace != null)
-            // {
-            //     return fileScopedNamespace;
-            // }
 
-            // If not file-scoped, get the nearest enclosing namespace
-            var namespaceDeclaration = node.Ancestors().OfType<NamespaceDeclarationSyntax>().LastOrDefault();
-            return namespaceDeclaration;
-        }
-        
         public static INamedTypeSymbol? GetEventFieldDeclarationSyntaxDelegateNamedTypeSymbol(EventFieldDeclarationSyntax eventFieldSyntax, SemanticModel semanticModel)
         {
             // Assuming there's only one variable in the declaration.

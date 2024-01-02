@@ -22,10 +22,15 @@ namespace PereViader.Utils.Common.Generators
             
             foreach (var candidate in receiver.Candidates)
             {
+                var model = context.Compilation.GetSemanticModel(candidate.Declaration.SyntaxTree);
+                var symbol = model.GetDeclaredSymbol(candidate.Declaration);
+                if (symbol is null)
+                {
+                    continue;
+                }
+
                 var className = candidate.Declaration.Identifier.Text;
-                var namespaceName = CodeGenerationExtensions.GetNamespaceDeclarationSyntax(candidate.Declaration)
-                    ?.Name
-                    .ToString() ?? "PereViader.Utils.Common.Generators";
+                var namespaceName = symbol.ContainingNamespace?.ToDisplayString() ?? "PereViader.Utils.Common.Generators";
 
                 GenerateId(context, namespaceName, className);
             }

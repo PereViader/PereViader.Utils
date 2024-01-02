@@ -11,14 +11,12 @@ namespace PereViader.Utils.Common.Generators
     {
         public void Initialize(GeneratorInitializationContext context)
         {
-            // Register a syntax receiver that will be created for each compilation
             context.RegisterForSyntaxNotifications(() => new TypeDeclarationWithAttributeSyntaxReceiver<TypeDeclarationSyntax, ToStringSourceGenerator>("GenerateToString"));
         }
 
         public void Execute(GeneratorExecutionContext context)
         {
-            // Retrieve the populated receiver containing the candidate classes/structs
-            if (!(context.SyntaxReceiver is TypeDeclarationWithAttributeSyntaxReceiver<TypeDeclarationSyntax, ToStringSourceGenerator> receiver))
+            if (context.SyntaxReceiver is not TypeDeclarationWithAttributeSyntaxReceiver<TypeDeclarationSyntax, ToStringSourceGenerator> receiver)
                 return;
 
             foreach (var candidate in receiver.Candidates)
@@ -34,6 +32,7 @@ namespace PereViader.Utils.Common.Generators
                 var sourceBuilder = new StringBuilder($@"
 namespace {symbol.ContainingNamespace.ToDisplayString()}
 {{
+    [System.CodeDom.Compiler.GeneratedCode(""PereViader.Utils.Common.Generators.ToStringSourceGenerator"", ""1.0.0.0"")]
     partial {candidate.Declaration.Keyword} {symbol.Name}
     {{
         public override string ToString()

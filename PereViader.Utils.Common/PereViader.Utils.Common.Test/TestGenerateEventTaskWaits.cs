@@ -1,95 +1,94 @@
 ﻿using NUnit.Framework;
 using PereViader.Utils.Common.Generators;
 
-namespace PereViader.Utils.Common.Test
+namespace PereViader.Utils.Common.Test;
+
+public delegate void TestGenerateEventTaskWaitsDelegate0();
+
+public delegate void TestGenerateEventTaskWaitsDelegate1(int potato);
+
+public delegate void TestGenerateEventTaskWaitsDelegate3(float orange, string lemon);
+
+[GenerateEventTaskWaits]
+public class SomeClass
 {
-    public delegate void TestGenerateEventTaskWaitsDelegate0();
+    public event TestGenerateEventTaskWaitsDelegate0? OnDelegate0;
+    public event TestGenerateEventTaskWaitsDelegate1? OnDelegate1;
+    public event TestGenerateEventTaskWaitsDelegate3? OnDelegate2;
 
-    public delegate void TestGenerateEventTaskWaitsDelegate1(int potato);
+    public void InvokeOnDelegate0() => OnDelegate0?.Invoke();
+    public void InvokeOnDelegate1(int potato) => OnDelegate1?.Invoke(potato);
+    public void InvokeOnDelegate2(float orange, string lemon) => OnDelegate2?.Invoke(orange, lemon);
+}
 
-    public delegate void TestGenerateEventTaskWaitsDelegate3(float orange, string lemon);
-
-    [GenerateEventTaskWaits]
-    public class SomeClass
+[TestFixture]
+public class TestGenerateEventTaskWaits
+{
+    [Test]
+    public void TestActionDelegate0()
     {
-        public event TestGenerateEventTaskWaitsDelegate0? OnDelegate0;
-        public event TestGenerateEventTaskWaitsDelegate1? OnDelegate1;
-        public event TestGenerateEventTaskWaitsDelegate3? OnDelegate2;
+        var testClass = new SomeClass();
+        var task = testClass.WaitOnDelegate0();
 
-        public void InvokeOnDelegate0() => OnDelegate0?.Invoke();
-        public void InvokeOnDelegate1(int potato) => OnDelegate1?.Invoke(potato);
-        public void InvokeOnDelegate2(float orange, string lemon) => OnDelegate2?.Invoke(orange, lemon);
+        Assert.That(task.IsCompleted, Is.False);
+        testClass.InvokeOnDelegate0();
+        Assert.That(task.IsCompleted, Is.True);
     }
 
-    [TestFixture]
-    public class TestGenerateEventTaskWaits
+    [Test]
+    public void TestActionDelegate1()
     {
-        [Test]
-        public void TestActionDelegate0()
-        {
-            var testClass = new SomeClass();
-            var task = testClass.WaitOnDelegate0();
+        var testClass = new SomeClass();
+        var task = testClass.WaitOnDelegate1();
 
-            Assert.That(task.IsCompleted, Is.False);
-            testClass.InvokeOnDelegate0();
-            Assert.That(task.IsCompleted, Is.True);
-        }
+        Assert.That(task.IsCompleted, Is.False);
+        testClass.InvokeOnDelegate1(10);
+        Assert.That(task.IsCompleted, Is.True);
+        Assert.That(task.Result, Is.EqualTo(10));
+    }
 
-        [Test]
-        public void TestActionDelegate1()
-        {
-            var testClass = new SomeClass();
-            var task = testClass.WaitOnDelegate1();
+    [Test]
+    public void TestActionDelegate2()
+    {
+        var testClass = new SomeClass();
+        var task = testClass.WaitOnDelegate2();
 
-            Assert.That(task.IsCompleted, Is.False);
-            testClass.InvokeOnDelegate1(10);
-            Assert.That(task.IsCompleted, Is.True);
-            Assert.That(task.Result, Is.EqualTo(10));
-        }
+        Assert.That(task.IsCompleted, Is.False);
+        testClass.InvokeOnDelegate2(10f, "lemon");
+        Assert.That(task.IsCompleted, Is.True);
+        Assert.That(task.Result, Is.EqualTo((10f, "lemon")));
+    }
 
-        [Test]
-        public void TestActionDelegate2()
-        {
-            var testClass = new SomeClass();
-            var task = testClass.WaitOnDelegate2();
+    [Test]
+    public void TestActionDelegate0Cancellation()
+    {
+        var testClass = new SomeClass();
+        using var cts = new CancellationTokenSource();
+        var task = testClass.WaitOnDelegate0(cts.Token);
 
-            Assert.That(task.IsCompleted, Is.False);
-            testClass.InvokeOnDelegate2(10f, "lemon");
-            Assert.That(task.IsCompleted, Is.True);
-            Assert.That(task.Result, Is.EqualTo((10f, "lemon")));
-        }
+        cts.Cancel();
+        Assert.That(task.IsCanceled);
+    }
 
-        [Test]
-        public void TestActionDelegate0Cancellation()
-        {
-            var testClass = new SomeClass();
-            using var cts = new CancellationTokenSource();
-            var task = testClass.WaitOnDelegate0(cts.Token);
+    [Test]
+    public void TestActionDelegate1Cancellation()
+    {
+        var testClass = new SomeClass();
+        using var cts = new CancellationTokenSource();
+        var task = testClass.WaitOnDelegate1(cts.Token);
 
-            cts.Cancel();
-            Assert.That(task.IsCanceled);
-        }
+        cts.Cancel();
+        Assert.That(task.IsCanceled);
+    }
 
-        [Test]
-        public void TestActionDelegate1Cancellation()
-        {
-            var testClass = new SomeClass();
-            using var cts = new CancellationTokenSource();
-            var task = testClass.WaitOnDelegate1(cts.Token);
+    [Test]
+    public void TestActionDelegate2Cancellation()
+    {
+        var testClass = new SomeClass();
+        using var cts = new CancellationTokenSource();
+        var task = testClass.WaitOnDelegate2(cts.Token);
 
-            cts.Cancel();
-            Assert.That(task.IsCanceled);
-        }
-
-        [Test]
-        public void TestActionDelegate2Cancellation()
-        {
-            var testClass = new SomeClass();
-            using var cts = new CancellationTokenSource();
-            var task = testClass.WaitOnDelegate2(cts.Token);
-
-            cts.Cancel();
-            Assert.That(task.IsCanceled);
-        }
+        cts.Cancel();
+        Assert.That(task.IsCanceled);
     }
 }
