@@ -1,10 +1,11 @@
 using System;
+using PereViader.Utils.Common.Collections;
 
 namespace PereViader.Utils.Common.DynamicDispatch
 {
     public sealed class ActionDynamicDispatch<TObj>
     {
-        readonly DynamicDispatchStore<(Action<TObj, object> inverseAction, object originalAction)> _store = new();
+        readonly TypeDictionary _store = new();
 
         public void Register<TConcrete>(Action<TConcrete> action)
             where TConcrete : TObj
@@ -26,11 +27,12 @@ namespace PereViader.Utils.Common.DynamicDispatch
             TObj obj, 
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var context))
+            if (!_store.TryGetValue(obj!.GetType(), checkAssignableTypes, out var contextObject))
             {
                 return false;
             }
 
+            var context = ((Action<TObj, object> inverseAction, object originalAction))contextObject;
             context.inverseAction.Invoke(obj, context.originalAction);
             return true;
         }
@@ -38,7 +40,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
 
     public sealed class ActionDynamicDispatch<TObj, TArg1>
     {
-        readonly DynamicDispatchStore<(Action<TObj, TArg1, object> inverseAction, object originalAction)> _store = new();
+        readonly TypeDictionary _store = new();
 
         public void Register<TConcrete>(Action<TConcrete, TArg1> action)
             where TConcrete : TObj
@@ -65,11 +67,12 @@ namespace PereViader.Utils.Common.DynamicDispatch
             TArg1 arg1, 
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var context))
+            if (!_store.TryGetValue(obj!.GetType(), checkAssignableTypes, out var contextObject))
             {
                 return false;
             }
 
+            var context = ((Action<TObj, TArg1, object> inverseAction, object originalAction))contextObject;
             context.inverseAction.Invoke(obj, arg1, context.originalAction);
             return true;
         }

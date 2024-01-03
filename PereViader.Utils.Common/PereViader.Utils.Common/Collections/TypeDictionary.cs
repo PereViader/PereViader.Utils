@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace PereViader.Utils.Common.Collections
 {
+    //TODO: Implement a TypeDictionary<T> and use it in DynamicDispatch to optimize GC
+
     /// <summary>
     /// A generic dictionary where the key is a Type object and the value is an object.
     /// Useful for doing type safe conversion between non generic type handling code and type safe code
@@ -63,6 +65,56 @@ namespace PereViader.Utils.Common.Collections
             value = (T)objectValue;
             return true;
         }
+        
+        public bool TryGetValue<TKey, TValue>(out TValue? value)
+        {
+            var type = typeof(TKey);
+            
+            if (!TryGetValue(type, out var objectValue))
+            {
+                value = default;
+                return false;
+            }
+
+            value = (TValue)objectValue;
+            return true;
+        }
+        
+        public bool TryGetValue<T>(
+            bool checkAssignableTypes,
+            out T value)
+        {
+            var result = TryGetValue(typeof(T), checkAssignableTypes, out var objectValue);
+            value = (T)objectValue;
+            return result;
+        }
+        
+        public bool TryGetValue<TKey, TValue>(
+            bool checkAssignableTypes,
+            out TValue value)
+        {
+            var result = TryGetValue(typeof(TKey), checkAssignableTypes, out var objectValue);
+            value = (TValue)objectValue;
+            return result;
+        }
+        
+        public bool TryGetValue(
+            Type type,
+            bool checkAssignableTypes,
+            out object value)
+        {
+            if (TryGetValue(type, out value))
+            {
+                return true;
+            }
+
+            if (!checkAssignableTypes || !TryGetAssignableKeyType(type, out var assignableKeyType))
+            {
+                return false;
+            }
+
+            return TryGetValue(assignableKeyType, out value);
+        }
 
         /// <summary>
         /// Determines whether the TypeDictionary contains the specified type key.
@@ -73,6 +125,21 @@ namespace PereViader.Utils.Common.Collections
         {
             var type = typeof(T);
             return ContainsKey(type);
+        }
+
+        bool TryGetAssignableKeyType(Type type, out Type assignableKeyType)
+        {
+            foreach (var key in Keys)
+            {
+                if (key.IsAssignableFrom(type))
+                {
+                    assignableKeyType = key;
+                    return true;
+                }
+            }
+
+            assignableKeyType = default!;
+            return false;
         }
     }
 }
