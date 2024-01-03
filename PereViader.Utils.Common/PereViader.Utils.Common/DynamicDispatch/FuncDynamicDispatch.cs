@@ -5,8 +5,8 @@ namespace PereViader.Utils.Common.DynamicDispatch
 {
     public sealed class FuncDynamicDispatch<TObj, TResult>
     {
-        private readonly TypeDictionary _store = new();
-
+        private readonly TypeDictionary<(Func<TObj, object, TResult> inverseFunc, object originalFunc)> _store = new();
+        
         public void Register<TConcrete>(Func<TConcrete, TResult> func)
             where TConcrete : TObj
         {
@@ -30,13 +30,12 @@ namespace PereViader.Utils.Common.DynamicDispatch
             out TResult result,
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGetValue(obj!.GetType(), checkAssignableTypes, out var contextObject))
+            if (!_store.TryGetValue(obj!.GetType(), checkAssignableTypes, out var context))
             {
                 result = default!;
                 return false;
             }
 
-            var context = ((Func<TObj, object, TResult> inverseFunc, object originalFunc))contextObject;
             result = context.inverseFunc.Invoke(obj, context.originalFunc);
             return true;
         }
@@ -44,7 +43,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
 
     public sealed class FuncDynamicDispatch<TObj, TArg1, TResult>
     {
-        private readonly TypeDictionary _store = new();
+        private readonly TypeDictionary<(Func<TObj, TArg1, object, TResult> inverseFunc, object originalFunc)> _store = new();
 
         public void Register<TConcrete>(Func<TConcrete, TArg1, TResult> func)
             where TConcrete : TObj
@@ -73,13 +72,12 @@ namespace PereViader.Utils.Common.DynamicDispatch
             out TResult result,
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGetValue(obj!.GetType(), checkAssignableTypes, out var contextObject))
+            if (!_store.TryGetValue(obj!.GetType(), checkAssignableTypes, out var context))
             {
                 result = default!;
                 return false;
             }
 
-            var context = ((Func<TObj, TArg1, object, TResult> inverseFunc, object originalFunc))contextObject;
             result = context.inverseFunc.Invoke(obj, arg1, context.originalFunc);
             return true;
         }

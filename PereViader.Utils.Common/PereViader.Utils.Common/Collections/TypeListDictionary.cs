@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PereViader.Utils.Common.Attributes;
 
 namespace PereViader.Utils.Common.Collections
 {
@@ -7,6 +8,7 @@ namespace PereViader.Utils.Common.Collections
     /// A generic dictionary where the key is a Type object and the value is List of objects of that type.
     /// Useful for doing type safe conversion between non generic type handling code and type safe code
     /// </summary>
+    [Experimental]
     public sealed class TypeListDictionary : Dictionary<Type, object>
     {
         /// <summary>
