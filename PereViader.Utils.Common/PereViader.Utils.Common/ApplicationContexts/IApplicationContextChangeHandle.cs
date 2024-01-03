@@ -11,6 +11,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
     /// to intervene in the loading process and prevent the context change to actually start until they are done
     /// </summary>
     [GenerateEventTaskWaits]
+    [GenerateEventRefs]
     public interface IApplicationContextChangeHandle
     {
         event Action<ApplicationContextChangeStep> OnCurrentApplicationContextChangeStepUpdated;

@@ -8,7 +8,7 @@ namespace PereViader.Utils.Common.TimeSlicing
         private readonly Func<DateTime> _currentDateTimeFunc;
         
         public TimeSpan TimeSpanBetweenSlices { get; set; }
-        public DateTime DateTimeOnPreviousSlice { get; private set; }
+        public DateTime DateTimeOnPreviousSlice { get; set; }
         
 
         public TimeSlicer(TimeSpan timeSpanBetweenSlices, Func<DateTime> currentDateTimeFunc)

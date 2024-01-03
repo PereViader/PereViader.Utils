@@ -6,6 +6,7 @@ using PereViader.Utils.Common.Generators;
 namespace PereViader.Utils.Common.Events
 {
     [GenerateEventTaskWaits]
+    //[GenerateEventRefs]
     public interface IListenAsyncEvent<out T>
     {
         event Action<T> OnEvent;

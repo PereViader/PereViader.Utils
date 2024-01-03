@@ -5,6 +5,7 @@ using PereViader.Utils.Common.Generators;
 namespace PereViader.Utils.Common.ActiveStatuses
 {
     [GenerateEventTaskWaits]
+    [GenerateEventRefs]
     public sealed class ActiveStatus
     {
         public event Action<bool>? OnChanged;

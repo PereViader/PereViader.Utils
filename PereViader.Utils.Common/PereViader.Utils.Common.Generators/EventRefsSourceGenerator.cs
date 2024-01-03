@@ -30,6 +30,7 @@ namespace PereViader.Utils.Common.Generators
                 var events = symbol.GetMembers().OfType<IEventSymbol>();
 
                 var sourceBuilder = new StringBuilder($@"
+using System;
 using PereViader.Utils.Common.Events;
 
 namespace {symbol.ContainingNamespace.ToDisplayString()}
