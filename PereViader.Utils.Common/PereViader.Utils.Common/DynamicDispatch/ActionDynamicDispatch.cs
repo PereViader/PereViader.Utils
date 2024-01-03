@@ -4,16 +4,14 @@ namespace PereViader.Utils.Common.DynamicDispatch
 {
     public sealed class ActionDynamicDispatch<TObj>
     {
-        readonly DynamicDispatchStore<Action<TObj>> _store = new DynamicDispatchStore<Action<TObj>>();
+        readonly DynamicDispatchStore<(Action<TObj, object> inverseAction, object originalAction)> _store = new();
 
         public void Register<TConcrete>(Action<TConcrete> action)
             where TConcrete : TObj
         {
-            void InverseAction(
-                TObj obj) =>
-                action.Invoke((TConcrete)obj!);
-
-            _store[typeof(TConcrete)] = InverseAction;
+            Action<TObj,object> action1 = (obj, actionObject) => ((Action<TConcrete>)actionObject).Invoke((TConcrete)obj!);
+            
+            _store[typeof(TConcrete)] = (action1, action);
         }
 
         public void Execute(TObj param)
@@ -28,29 +26,30 @@ namespace PereViader.Utils.Common.DynamicDispatch
             TObj obj, 
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var action))
+            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var context))
             {
                 return false;
             }
 
-            action.Invoke(obj);
+            context.inverseAction.Invoke(obj, context.originalAction);
             return true;
         }
     }
 
     public sealed class ActionDynamicDispatch<TObj, TArg1>
     {
-        readonly DynamicDispatchStore<Action<TObj, TArg1>> _store = new DynamicDispatchStore<Action<TObj, TArg1>>();
+        readonly DynamicDispatchStore<(Action<TObj, TArg1, object> inverseAction, object originalAction)> _store = new();
 
         public void Register<TConcrete>(Action<TConcrete, TArg1> action)
             where TConcrete : TObj
         {
-            void InverseAction(
-                TObj obj,
-                TArg1 arg1
-                ) => action.Invoke((TConcrete)obj!, arg1);
+            Action<TObj, TArg1, object> inverseAction = (
+                obj,
+                arg1,
+                originalAction
+                ) => ((Action<TConcrete, TArg1>)originalAction).Invoke((TConcrete)obj!, arg1);
 
-            _store[typeof(TConcrete)] = InverseAction;
+            _store[typeof(TConcrete)] = (inverseAction, action);
         }
 
         public void Execute(TObj obj, TArg1 arg1)
@@ -66,12 +65,12 @@ namespace PereViader.Utils.Common.DynamicDispatch
             TArg1 arg1, 
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var action))
+            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var context))
             {
                 return false;
             }
 
-            action.Invoke(obj, arg1);
+            context.inverseAction.Invoke(obj, arg1, context.originalAction);
             return true;
         }
     }

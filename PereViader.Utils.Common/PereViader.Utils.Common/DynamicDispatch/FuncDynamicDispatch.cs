@@ -4,14 +4,14 @@ namespace PereViader.Utils.Common.DynamicDispatch
 {
     public sealed class FuncDynamicDispatch<TObj, TResult>
     {
-        private readonly DynamicDispatchStore<Func<TObj, TResult>> _store = new DynamicDispatchStore<Func<TObj, TResult>>();
+        private readonly DynamicDispatchStore<(Func<TObj, object, TResult> inverseFunc, object originalFunc)> _store = new();
 
         public void Register<TConcrete>(Func<TConcrete, TResult> func)
             where TConcrete : TObj
         {
-            TResult InverseFunc(TObj obj) => func.Invoke((TConcrete)obj!);
+            Func<TObj, object, TResult> inverseFunc = (obj, originalFunc) => ((Func<TConcrete, TResult>)originalFunc).Invoke((TConcrete)obj!);
 
-            _store[typeof(TConcrete)] = InverseFunc;
+            _store[typeof(TConcrete)] = (inverseFunc, func);
         }
 
         public TResult Execute(TObj param)
@@ -29,30 +29,27 @@ namespace PereViader.Utils.Common.DynamicDispatch
             out TResult result,
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var func))
+            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var context))
             {
                 result = default!;
                 return false;
             }
 
-            result = func.Invoke(obj);
+            result = context.inverseFunc.Invoke(obj, context.originalFunc);
             return true;
         }
     }
 
     public sealed class FuncDynamicDispatch<TObj, TArg1, TResult>
     {
-        private readonly DynamicDispatchStore<Func<TObj, TArg1, TResult>> _store = new DynamicDispatchStore<Func<TObj, TArg1, TResult>>();
+        private readonly DynamicDispatchStore<(Func<TObj, TArg1, object, TResult> inverseFunc, object originalFunc)> _store = new();
 
         public void Register<TConcrete>(Func<TConcrete, TArg1, TResult> func)
             where TConcrete : TObj
         {
-            TResult InverseFunc(
-                TObj obj,
-                TArg1 arg1
-                ) => func.Invoke((TConcrete)obj!, arg1);
+            Func<TObj, TArg1, object, TResult> inverseFunc = (obj, arg1, originalFunc) => ((Func<TConcrete, TArg1, TResult>)originalFunc).Invoke((TConcrete)obj!, arg1);
 
-            _store[typeof(TConcrete)] = InverseFunc;
+            _store[typeof(TConcrete)] = (inverseFunc, func);
         }
 
         public TResult Execute(
@@ -74,13 +71,13 @@ namespace PereViader.Utils.Common.DynamicDispatch
             out TResult result,
             bool checkAssignableTypes = true)
         {
-            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var func))
+            if (!_store.TryGet(obj!.GetType(), checkAssignableTypes, out var context))
             {
                 result = default!;
                 return false;
             }
 
-            result = func.Invoke(obj, arg1);
+            result = context.inverseFunc.Invoke(obj, arg1, context.originalFunc);
             return true;
         }
     }

@@ -5,7 +5,7 @@ namespace PereViader.Utils.Common.DynamicDispatch
 {
     public sealed class DynamicDispatchStore<T>
     {
-        readonly Dictionary<Type, T> _values = new Dictionary<Type, T>();
+        readonly Dictionary<Type, T> _values = new();
 
         public bool TryGet(
             Type type,
