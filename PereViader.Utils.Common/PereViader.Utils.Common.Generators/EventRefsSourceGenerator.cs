@@ -47,13 +47,13 @@ namespace {symbol.ContainingNamespace.ToDisplayString()}
                     };
                     
                     sourceBuilder.AppendLine($@"
-        private static readonly Action<{symbol.Name}, {actualType}> {@event.Name}SubscribeAction = (obj, action) => obj.{@event.Name} += action;
-        private static readonly Action<{symbol.Name}, {actualType}> {@event.Name}UnsubscribeAction = (obj, action) => obj.{@event.Name} -= action;
+        private static readonly Action<object, {actualType}> {@event.Name}SubscribeAction = (obj, action) => (({symbol.Name})obj).{@event.Name} += action;
+        private static readonly Action<object, {actualType}> {@event.Name}UnsubscribeAction = (obj, action) => (({symbol.Name})obj).{@event.Name} -= action;
         
-        public static EventRef<{symbol.Name}, {actualType}> Get{@event.Name}EventRef(
+        public static EventRef<{actualType}> Get{@event.Name}EventRef(
                 this {symbol.Name} obj)
         {{
-            return new EventRef<{symbol.Name}, {actualType}>(
+            return new EventRef<{actualType}>(
                     obj, 
                     {@event.Name}SubscribeAction,
                     {@event.Name}UnsubscribeAction);
