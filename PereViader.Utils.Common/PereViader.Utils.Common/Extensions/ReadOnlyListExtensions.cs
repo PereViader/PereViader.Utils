@@ -5,10 +5,6 @@ namespace PereViader.Utils.Common.Extensions
 {
     public static class ReadOnlyListExtensions
     {
-        // https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-8.0
-        //TODO: Missing FindLast
-        //TODO: Missing FindLastIndex
-        
         public static T? Find<T>(this IReadOnlyList<T> list, Func<T, bool> match)
         {
             for (int i = 0; i < list.Count; i++)
@@ -226,7 +222,237 @@ namespace PereViader.Utils.Common.Extensions
 
             return -1;
         }
+        
+        public static int FindLastIndex<T>(this IReadOnlyList<T> list, int startIndex, int count, Func<T, bool> match)
+        {
+            if (startIndex < 0 || startIndex >= list.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex,"startIndex is out of range.");
+            }
 
+            if (count < 0 || startIndex - count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), count, "count is out of range.");
+            }
+
+            int endIndex = startIndex - count;
+
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                if (match(list[i]))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+        
+        public static int FindLastIndex<T, TArg>(this IReadOnlyList<T> list, int startIndex, int count, Func<T, TArg, bool> match, TArg arg)
+        {
+            if (startIndex < 0 || startIndex >= list.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex,"startIndex is out of range.");
+            }
+
+            if (count < 0 || startIndex - count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), count, "count is out of range.");
+            }
+
+            int endIndex = startIndex - count;
+
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                if (match(list[i], arg))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+        
+        public static int FindLastIndex<T>(this IReadOnlyList<T> list, int startIndex, Func<T, bool> match)
+        {
+            if (startIndex < 0 || startIndex >= list.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex,"startIndex is out of range.");
+            }
+
+            for (int i = startIndex; i >= 0; i--)
+            {
+                if (match(list[i]))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+        
+        public static int FindLastIndex<T, TArg>(this IReadOnlyList<T> list, int startIndex, Func<T, TArg, bool> match, TArg arg)
+        {
+            if (startIndex < 0 || startIndex >= list.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex,"startIndex is out of range.");
+            }
+
+            for (int i = startIndex; i >= 0; i--)
+            {
+                if (match(list[i], arg))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+        
+        public static int FindLastIndex<T>(this IReadOnlyList<T> list, Func<T, bool> match)
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                if (match(list[i]))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+        
+        public static int FindLastIndex<T, TArg>(this IReadOnlyList<T> list, Func<T, TArg, bool> match, TArg arg)
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                if (match(list[i], arg))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public static T? FindLast<T>(this IReadOnlyList<T> list, int startIndex, int count, Func<T, bool> match)
+        {
+            if (startIndex < 0 || startIndex >= list.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex,"startIndex is out of range.");
+            }
+
+            if (count < 0 || startIndex - count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), count, "count is out of range.");
+            }
+
+            int endIndex = startIndex - count;
+
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                var value = list[i];
+                if (match(value))
+                {
+                    return value;
+                }
+            }
+
+            return default;
+        }
+        
+        public static T? FindLast<T, TArg>(this IReadOnlyList<T> list, int startIndex, int count, Func<T, TArg, bool> match, TArg arg)
+        {
+            if (startIndex < 0 || startIndex >= list.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex,"startIndex is out of range.");
+            }
+
+            if (count < 0 || startIndex - count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), count, "count is out of range.");
+            }
+
+            int endIndex = startIndex - count;
+
+            for (int i = startIndex; i >= endIndex; i--)
+            {
+                var value = list[i];
+                if (match(value, arg))
+                {
+                    return value;
+                }
+            }
+
+            return default;
+        }
+        
+        public static T? FindLast<T>(this IReadOnlyList<T> list, int startIndex, Func<T, bool> match)
+        {
+            if (startIndex < 0 || startIndex >= list.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex,"startIndex is out of range.");
+            }
+
+            for (int i = startIndex; i >= 0; i--)
+            {
+                var value = list[i];
+                if (match(value))
+                {
+                    return value;
+                }
+            }
+
+            return default;
+        }
+        
+        public static T? FindLast<T, TArg>(this IReadOnlyList<T> list, int startIndex, Func<T, TArg, bool> match, TArg arg)
+        {
+            if (startIndex < 0 || startIndex >= list.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex,"startIndex is out of range.");
+            }
+
+            for (int i = startIndex; i >= 0; i--)
+            {
+                var value = list[i];
+                if (match(value, arg))
+                {
+                    return value;
+                }
+            }
+
+            return default;
+        }
+        
+        public static T? FindLast<T>(this IReadOnlyList<T> list, Func<T, bool> match)
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                var value = list[i];
+                if (match(value))
+                {
+                    return value;
+                }
+            }
+
+            return default;
+        }
+        
+        public static T? FindLast<T, TArg>(this IReadOnlyList<T> list, Func<T, TArg, bool> match, TArg arg)
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                var value = list[i];
+                if (match(value, arg))
+                {
+                    return value;
+                }
+            }
+
+            return default;
+        }
+        
         public static bool TrueForAll<T>(this IReadOnlyList<T> list, Func<T, bool> predicate)
         {
             for (int i = 0; i < list.Count; i++)
