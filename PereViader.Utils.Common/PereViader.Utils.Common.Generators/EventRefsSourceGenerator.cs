@@ -29,8 +29,8 @@ namespace PereViader.Utils.Common.Generators
 
                 var events = symbol.GetMembers().OfType<IEventSymbol>();
 
-                var sourceBuilder = new StringBuilder($@"
-using System;
+                var genericArgumentIdentifiers = candidate.Declaration.GetGenericArgumentIdentifiers();
+                var sourceBuilder = new StringBuilder($@"using System;
 using PereViader.Utils.Common.Events;
 
 namespace {symbol.ContainingNamespace.ToDisplayString()}
@@ -47,17 +47,14 @@ namespace {symbol.ContainingNamespace.ToDisplayString()}
                         _ => @event.Type
                     };
                     
-                    sourceBuilder.AppendLine($@"
-        private static readonly Action<object, {actualType}> {@event.Name}SubscribeAction = (obj, action) => (({symbol.Name})obj).{@event.Name} += action;
-        private static readonly Action<object, {actualType}> {@event.Name}UnsubscribeAction = (obj, action) => (({symbol.Name})obj).{@event.Name} -= action;
-        
-        public static EventRef<{actualType}> Get{@event.Name}EventRef(
-                this {symbol.Name} obj)
+                    sourceBuilder.AppendLine($@"       
+        public static EventRef<{actualType}> Get{@event.Name}EventRef{genericArgumentIdentifiers}(
+                this {symbol.Name}{genericArgumentIdentifiers} obj)
         {{
             return new EventRef<{actualType}>(
                     obj, 
-                    {@event.Name}SubscribeAction,
-                    {@event.Name}UnsubscribeAction);
+                    (obj, action) => (({symbol.Name}{genericArgumentIdentifiers})obj).{@event.Name} += action,
+                    (obj, action) => (({symbol.Name}{genericArgumentIdentifiers})obj).{@event.Name} -= action);
         }}");
                 }
 

@@ -18,7 +18,6 @@ namespace PereViader.Utils.Common.Generators
         
         public static string GetGenericArgumentIdentifiers(this TypeDeclarationSyntax typeDeclaration)
         {
-
             if (typeDeclaration.TypeParameterList == null)
             {
                 return string.Empty;

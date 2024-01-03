@@ -4,7 +4,7 @@ using PereViader.Utils.Common.Generators;
 namespace PereViader.Utils.Common.Events
 {
     [GenerateEventTaskWaits]
-    //[GenerateEventRefs]
+    [GenerateEventRefs]
     public interface IListenEvent<out T>
     {
         event Action<T> OnEvent;
