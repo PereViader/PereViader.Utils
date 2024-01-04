@@ -9,9 +9,9 @@ namespace PereViader.Utils.Common.Events
         private readonly Action<object, T> subscribeAction;
         private readonly Action<object, T> unsubscribeAction;
         
-        public EventRef(object value, Action<object, T> subscribeAction, Action<object, T> unsubscribeAction)
+        public EventRef(object objectReference, Action<object, T> subscribeAction, Action<object, T> unsubscribeAction)
         {
-            ObjectReference = value;
+            ObjectReference = objectReference;
             this.subscribeAction = subscribeAction;
             this.unsubscribeAction = unsubscribeAction;
         }
