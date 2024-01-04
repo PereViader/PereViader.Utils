@@ -2,14 +2,17 @@
 
 namespace PereViader.Utils.Common.Disposables
 {
-    public sealed class ActionDisposable<T> : IDisposable<T>
+    public struct ValueDisposable<T> : IDisposable<T>
     {
-        private readonly Action _action;
+        private readonly Action<T> _action;
         private bool _disposed;
+        
+        public T Value { get; }
 
-        public ActionDisposable(T value, Action action)
+        public ValueDisposable(T value, Action<T> action)
         {
             _action = action;
+            _disposed = false;
             Value = value;
         }
 
@@ -21,9 +24,7 @@ namespace PereViader.Utils.Common.Disposables
             }
 
             _disposed = true;
-            _action.Invoke();
+            _action.Invoke(Value);
         }
-
-        public T Value { get; }
     }
 }

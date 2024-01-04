@@ -2,15 +2,17 @@
 
 namespace PereViader.Utils.Common.Disposables
 {
-    public sealed class ActionWithValueDisposable<T> : IDisposable<T>
+    public sealed class Disposable<T> : IDisposable<T>
     {
         private readonly Action<T> _action;
         private bool _disposed;
 
-        public ActionWithValueDisposable(T value, Action<T> action)
+        public T Value { get; }
+
+        public Disposable(T value, Action<T> action)
         {
-            this._action = action;
-            this.Value = value;
+            _action = action;
+            Value = value;
         }
 
         public void Dispose()
@@ -23,7 +25,5 @@ namespace PereViader.Utils.Common.Disposables
             _disposed = true;
             _action.Invoke(Value);
         }
-
-        public T Value { get; }
     }
 }

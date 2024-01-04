@@ -12,30 +12,30 @@ namespace PereViader.Utils.Common.Events
             remove => RemoveListener(value);
         }
 
-        private readonly List<Action<T>> eventActions = new List<Action<T>>();
+        private readonly List<Action<T>> _eventActions = new();
 
-        public int ListenerCount => eventActions.Count;
+        public int ListenerCount => _eventActions.Count;
         
         public void AddListener(Action<T> action)
         {
-            eventActions.Add(action);
+            _eventActions.Add(action);
         }
 
         public void RemoveListener(Action<T> action)
         {
-            eventActions.Remove(action);
+            _eventActions.Remove(action);
         }
 
         public void ClearAllListeners()
         {
-            eventActions.Clear();
+            _eventActions.Clear();
         }
 
         public void Raise(T value)
         {
             var count = ListenerCount;
             var cache = ArrayPool<Action<T>>.Shared.Rent(count);
-            eventActions.CopyTo(cache);
+            _eventActions.CopyTo(cache);
             for (int i = 0; i < count; i++)
             {
                 var action = cache[i];
