@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PereViader.Utils.Common.Optionals
+﻿namespace PereViader.Utils.Common.Optionals
 {
     public readonly struct Optional<T>
     {
@@ -13,42 +11,14 @@ namespace PereViader.Utils.Common.Optionals
             HasValue = hasValue;
         }
 
-        public static Optional<T> Some(T value)
-        {
-            if (value == null)
-            {
-                return None;
-            }
-            
-            return new Optional<T>(value, true);
-        }
-
-        public static Optional<T> Maybe(T value, bool hasValue)
-        {
-            if (!hasValue)
-            {
-                return None;
-            }
-            
-            return Some(value);
-        }
-
+        public static Optional<T> Some(T value)=> value == null ? None : new Optional<T>(value, true);
+        public static Optional<T> Maybe(T value, bool hasValue) => !hasValue ? None : Some(value);
         public static Optional<T> None => default;
 
         public bool TryGetValue(out T value)
         {
             value = _value;
             return HasValue;
-        }
-        
-        public T UnsafeGetValue()
-        {
-            if (!HasValue)
-            {
-                throw new InvalidOperationException($"No value present in {nameof(Optional<T>)}");
-            }
-            
-            return _value;
         }
     }
 }

@@ -5,12 +5,12 @@ namespace PereViader.Utils.Common.Extensions
 {
     public static class ValueExtensions
     {
-        public static T? ToNullOnDefault<T>(this T value) where T : struct
+        public static T? ToNullableNullOnDefaultValue<T>(this T value) where T : struct
         {
             return EqualityComparer<T>.Default.Equals(value, default) ? null : value;
         }
         
-        public static Optional<T> ToOptionalNoneOnDefault<T>(this T value) where T : struct
+        public static Optional<T> ToOptionalNoneOnDefaultValue<T>(this T value) where T : struct
         {
             return EqualityComparer<T>.Default.Equals(value, default) ? Optional<T>.None : Optional<T>.Some(value);
         }
