@@ -6,13 +6,13 @@ namespace PereViader.Utils.Common.Extensions
     public static class GraphTraversalExtensions
     {
         /// <summary>
-        /// Performs an unrestricted depth-first search (DFS) starting from the specified value.
+        /// Performs an unrestricted depth-first traversal starting from the specified value.
         /// </summary>
-        /// <typeparam name="T">The type of elements being searched.</typeparam>
-        /// <param name="value">The starting value for the search.</param>
+        /// <typeparam name="T">The type of elements being traversed.</typeparam>
+        /// <param name="value">The starting value for the traversal.</param>
         /// <param name="getNextValuesFunc">A function that provides the next values to explore.</param>
-        /// <returns>An IEnumerable of elements in the order they are visited during the search.</returns>
-        public static IEnumerable<T> DepthFirstSearchUnrestricted<T>(T value, Func<IEnumerable<T>> getNextValuesFunc)
+        /// <returns>An IEnumerable of elements in the order they are visited.</returns>
+        public static IEnumerable<T> DepthFirstUnrestricted<T>(T value, Func<T, IEnumerable<T>> getNextValuesFunc)
         {
             var stack = new Stack<T>();
             stack.Push(value);
@@ -22,7 +22,7 @@ namespace PereViader.Utils.Common.Extensions
                 var currentValue = stack.Pop();
                 yield return currentValue;
 
-                var nextValues = getNextValuesFunc.Invoke();
+                var nextValues = getNextValuesFunc(currentValue);
 
                 foreach (var nextValue in nextValues)
                 {
@@ -32,13 +32,13 @@ namespace PereViader.Utils.Common.Extensions
         }
 
         /// <summary>
-        /// Performs a cycle-aware depth-first search (DFS) starting from the specified value.
+        /// Performs a cycle-aware depth-first traversal starting from the specified value.
         /// </summary>
-        /// <typeparam name="T">The type of elements being searched.</typeparam>
-        /// <param name="value">The starting value for the search.</param>
+        /// <typeparam name="T">The type of elements being traversed.</typeparam>
+        /// <param name="value">The starting value for the traversal.</param>
         /// <param name="getNextValuesFunc">A function that provides the next values to explore.</param>
-        /// <returns>An IEnumerable of elements in the order they are visited during the search.</returns>
-        public static IEnumerable<T> DepthFirstSearchCycleAware<T>(T value, Func<IEnumerable<T>> getNextValuesFunc)
+        /// <returns>An IEnumerable of elements in the order they are visited.</returns>
+        public static IEnumerable<T> DepthFirstCycleAware<T>(T value, Func<T, IEnumerable<T>> getNextValuesFunc)
         {
             var visited = new HashSet<T>();
             var stack = new Stack<T>();
@@ -51,7 +51,7 @@ namespace PereViader.Utils.Common.Extensions
                 yield return currentValue;
                 visited.Add(currentValue);
 
-                var nextValues = getNextValuesFunc.Invoke();
+                var nextValues = getNextValuesFunc(currentValue);
 
                 foreach (var nextValue in nextValues)
                 {
@@ -64,13 +64,13 @@ namespace PereViader.Utils.Common.Extensions
         }
         
         /// <summary>
-        /// Performs an unrestricted breadth-first search (BFS) starting from the specified value.
+        /// Performs an unrestricted breadth-first traversal starting from the specified value.
         /// </summary>
-        /// <typeparam name="T">The type of elements being searched.</typeparam>
-        /// <param name="start">The starting value for the search.</param>
+        /// <typeparam name="T">The type of elements being traversed.</typeparam>
+        /// <param name="start">The starting value for the traversal.</param>
         /// <param name="getNextNodesFunc">A function that provides the next nodes to explore.</param>
-        /// <returns>An IEnumerable of elements in the order they are visited during the search.</returns>
-        public static IEnumerable<T> BreadthFirstSearchUnrestricted<T>(T start, Func<T, IEnumerable<T>> getNextNodesFunc)
+        /// <returns>An IEnumerable of elements in the order they are visited during the traversal.</returns>
+        public static IEnumerable<T> BreadthFirstUnrestricted<T>(T start, Func<T, IEnumerable<T>> getNextNodesFunc)
         {
             var queue = new Queue<T>();
 
@@ -92,13 +92,13 @@ namespace PereViader.Utils.Common.Extensions
         }
         
         /// <summary>
-        /// Performs a cycle-aware breadth-first search (BFS) starting from the specified value.
+        /// Performs a cycle-aware breadth-first traversal starting from the specified value.
         /// </summary>
-        /// <typeparam name="T">The type of elements being searched.</typeparam>
-        /// <param name="start">The starting value for the search.</param>
+        /// <typeparam name="T">The type of elements being traversed.</typeparam>
+        /// <param name="start">The starting value for the traversal.</param>
         /// <param name="getNextNodesFunc">A function that provides the next nodes to explore.</param>
-        /// <returns>An IEnumerable of elements in the order they are visited during the search.</returns>
-        public static IEnumerable<T> BreadthFirstSearchCycleAware<T>(T start, Func<T, IEnumerable<T>> getNextNodesFunc)
+        /// <returns>An IEnumerable of elements in the order they are visited during the traversal.</returns>
+        public static IEnumerable<T> BreadthFirstCycleAware<T>(T start, Func<T, IEnumerable<T>> getNextNodesFunc)
         {
             var visited = new HashSet<T>();
             var queue = new Queue<T>();
