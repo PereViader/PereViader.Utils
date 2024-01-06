@@ -8,120 +8,82 @@ namespace PereViader.Utils.Common.Test;
 public class TestApplicationContextService
 {
     [Test]
-    public void PushMany_TwoElementsOnEmptyStack_RunsAsExpected()
-    {
-        var context1 = CreateApplicationContextThatCompletesInstantly();
-        var context2 = CreateApplicationContextThatCompletesInstantly();
-
-        var service = new ApplicationContextService();
-
-        service
-            .Push(new[] { context1, context2 })
-            .AllowComplete();
-        
-        Received.InOrder(() =>
-        {
-            context1.Load(Arg.Any<CancellationToken>());
-            context1.Suspend(Arg.Any<CancellationToken>());
-            context2.Load(Arg.Any<CancellationToken>());
-            context2.Enter(Arg.Any<CancellationToken>());
-        });
-    }
-    
-    [Test]
-    public void Push_OnContext_DoesNotCompleteUntilTheElementIsAllowed()
+    public void AddThenUnload_RemovesTheContextAfterUnload()
     {
         var context = CreateApplicationContextThatCompletesInstantly();
-
         var service = new ApplicationContextService();
-
-        var handle = service.Push(context);
-
-        Assert.That(handle.IsCompleteAllowed, Is.False);
-        Assert.That(handle.CurrentApplicationContextChangeStep, Is.EqualTo(ApplicationContextChangeStep.AwaitingPermissionForFinal));
+        var handle = service.Add(context);
         
-        handle.AllowComplete();
+        handle.Unload();
         
-        Assert.That(handle.IsCompleteAllowed, Is.True);
-        Assert.That(handle.CurrentApplicationContextChangeStep, Is.EqualTo(ApplicationContextChangeStep.Complete));
+        Assert.That(service.ApplicationContexts, Is.Empty);
     }
     
     [Test]
-    public void PushThenPop_OnStackWithSingleElement_AddsItThenRemovesIt()
+    public void AddAndUseHandle_OnSingleHandle_RunsInExpectedOrder()
     {
         var context = CreateApplicationContextThatCompletesInstantly();
-
         var service = new ApplicationContextService();
+        var handle = service.Add(context);
 
-        service
-            .Push(context)
-            .AllowComplete();
+        handle.Load();
+        handle.Start();
+        handle.Unload();
         
-        service
-            .Pop()
-            .AllowComplete();
-
         Received.InOrder(() =>
         {
-            context.Load(Arg.Any<CancellationToken>());
-            context.Enter(Arg.Any<CancellationToken>());
-            context.Exit(Arg.Any<CancellationToken>());
+            context.Load();
+            context.Start();
+            context.DisposeAsync();
         });
     }
     
     [Test]
-    public void PushThenPop_OnEmptyStack_AddsThemSuspendsAndResumes()
+    public void AddThenGet_WithNullPredicate_FindsTheProperContext()
     {
-        var context1 = CreateApplicationContextThatCompletesInstantly();
-        var context2 = CreateApplicationContextThatCompletesInstantly();
-        
+        var context = Substitute.For<IApplicationContext>();
         var service = new ApplicationContextService();
+        service.Add(context);
 
-        service
-            .Push(new []{ context1, context2})
-            .AllowComplete();
-        
-        service
-            .Pop()
-            .AllowComplete();
-
-        Received.InOrder(() =>
-        {
-            context1.Load(Arg.Any<CancellationToken>());
-            context1.Suspend(Arg.Any<CancellationToken>());
-            context2.Load(Arg.Any<CancellationToken>());
-            context2.Enter(Arg.Any<CancellationToken>());
-            context2.Exit(Arg.Any<CancellationToken>());
-            context1.Resume(Arg.Any<CancellationToken>());
-        });
+        var foundContext = service.Get<IApplicationContext>();
+        Assert.That(foundContext, Is.EqualTo(context));
     }
     
     [Test]
-    public void PopAndPush_OnStackWithOneContext_RunsAsExpected()
+    public void AddThenGet_WithPredicate_FindsTheProperContext()
+    {
+        var context = Substitute.For<IApplicationContext>();
+        var service = new ApplicationContextService();
+        service.Add(context);
+
+        var foundContext = service.Get<IApplicationContext>(x => x == context);
+        Assert.That(foundContext, Is.EqualTo(context));
+    }
+
+    [Test]
+    public void AddAndUseHandle_OnMultipleHandles_RunsInExpectedOrder()
     {
         var context1 = CreateApplicationContextThatCompletesInstantly();
         var context2 = CreateApplicationContextThatCompletesInstantly();
-        var context3 = CreateApplicationContextThatCompletesInstantly();
-
         var service = new ApplicationContextService();
-
-        service
-            .Push(context1)
-            .AllowComplete();
+        var handle1 = service.Add(context1);
+        var handle2 = service.Add(context2);
         
-        service
-            .PopThenPush(new []{ context2, context3 })
-            .AllowComplete();
-
+        handle1.Load();
+        handle2.Load();
+        handle2.Start();
+        handle1.Start();
+        handle2.Unload();
+        handle1.Unload();
+        
         Received.InOrder(() =>
         {
-            context1.Load(Arg.Any<CancellationToken>());
-            context1.Enter(Arg.Any<CancellationToken>());
-            context1.Exit(Arg.Any<CancellationToken>());
-            context2.Load(Arg.Any<CancellationToken>());
-            context2.Suspend(Arg.Any<CancellationToken>());
-            context3.Load(Arg.Any<CancellationToken>());
-            context3.Enter(Arg.Any<CancellationToken>());
+            context1.Load();
+            context2.Load();
+            context2.Start();
+            context1.Start();
+            context2.DisposeAsync();
+            context1.DisposeAsync();
         });
     }
 
@@ -129,11 +91,9 @@ public class TestApplicationContextService
     {
         var context = Substitute.For<IApplicationContext>();
 
-        context.Load(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
-        context.Enter(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
-        context.Suspend(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
-        context.Resume(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
-        context.Exit(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        context.Load().Returns(Task.CompletedTask);
+        context.Start().Returns(Task.CompletedTask);
+        context.DisposeAsync().Returns(new ValueTask());
 
         return context;
     }
