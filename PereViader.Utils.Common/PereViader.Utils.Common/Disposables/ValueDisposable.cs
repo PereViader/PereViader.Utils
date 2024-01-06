@@ -26,5 +26,7 @@ namespace PereViader.Utils.Common.Disposables
             _disposed = true;
             _action.Invoke(Value);
         }
+
+        public Disposable<T> AsDisposable() => new(Value, _action);
     }
 }

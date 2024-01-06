@@ -5,10 +5,10 @@ namespace PereViader.Utils.Common.Disposables
 {
     public sealed class AsyncDisposable<T> : IAsyncDisposable<T>
     {
-        private readonly Func<T, Task> _func;
+        private readonly Func<T, ValueTask> _func;
         private bool _disposed;
 
-        public AsyncDisposable(T value, Func<T, Task> func)
+        public AsyncDisposable(T value, Func<T, ValueTask> func)
         {
             _func = func;
             Value = value;
@@ -16,11 +16,11 @@ namespace PereViader.Utils.Common.Disposables
 
         public T Value { get; }
         
-        public Task DisposeAsync()
+        public ValueTask DisposeAsync()
         {
             if (_disposed)
             {
-                return Task.CompletedTask;
+                return default;
             }
 
             _disposed = true;

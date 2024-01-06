@@ -5,10 +5,10 @@ namespace PereViader.Utils.Common.Disposables
 {
     public struct ValueAsyncDisposable<T> : IAsyncDisposable<T>
     {
-        private readonly Func<T, Task> _func;
+        private readonly Func<T, ValueTask> _func;
         private bool _disposed;
 
-        public ValueAsyncDisposable(T value, Func<T, Task> func)
+        public ValueAsyncDisposable(T value, Func<T, ValueTask> func)
         {
             _func = func;
             _disposed = false;
@@ -17,15 +17,17 @@ namespace PereViader.Utils.Common.Disposables
 
         public T Value { get; }
         
-        public Task DisposeAsync()
+        public ValueTask DisposeAsync()
         {
             if (_disposed)
             {
-                return Task.CompletedTask;
+                return default;
             }
 
             _disposed = true;
             return _func.Invoke(Value);
         }
+        
+        public AsyncDisposable<T> AsAsyncDisposable() => new(Value, _func);
     }
 }
