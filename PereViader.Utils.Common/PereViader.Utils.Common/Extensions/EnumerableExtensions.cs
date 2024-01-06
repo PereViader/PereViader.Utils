@@ -128,7 +128,19 @@ namespace PereViader.Utils.Common.Extensions
             }
 
             return count;
-        } 
+        }
+        
+        public static bool TryGetFirst<T>(this IEnumerable<T> source, out T value)
+        {
+            foreach (var element in source)
+            {
+                value = element;
+                return true;
+            }
+
+            value = default!;
+            return false;
+        }
         
         public static bool TryGetFirst<T, TArg>(this IEnumerable<T> source, Func<T, TArg, bool> predicate, TArg arg, out T value)
         {
