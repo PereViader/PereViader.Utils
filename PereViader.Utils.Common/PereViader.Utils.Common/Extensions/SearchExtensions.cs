@@ -5,7 +5,7 @@ namespace PereViader.Utils.Common.Extensions
 {
     public static class SearchExtensions
     {
-        public static List<TChange>? BruteForce<TState, TChange>(
+        public static List<TChange>? BruteForceFirst<TState, TChange>(
             TState initialState,
             TState finalState,
             Func<TState, List<TChange>, TState, IEnumerable<TChange>> getStateChanges,
@@ -23,13 +23,15 @@ namespace PereViader.Utils.Common.Extensions
             {
                 var (currentState, currentChanges) = element;
 
-                if (visited.Contains(currentState))
+                if (!visited.Add(currentState))
+                {
                     continue;
+                }
 
                 if (equalityComparer.Equals(currentState, finalState))
+                {
                     return currentChanges;
-
-                visited.Add(currentState);
+                }
 
                 foreach (var change in getStateChanges(currentState, currentChanges, finalState))
                 {
@@ -40,6 +42,56 @@ namespace PereViader.Utils.Common.Extensions
             }
 
             return null;
+        }
+        
+        public static List<TChange>? BruteForceBest<TState, TChange>(
+            TState initialState,
+            TState finalState,
+            Func<TState, List<TChange>, TState, IEnumerable<TChange>> getStateChanges,
+            Func<TState, TChange, TState> applyStateChange,
+            Func<List<TChange>, double> getChangeCost,
+            IEqualityComparer<TState>? stateEqualityComparer = null)
+        {
+            var equalityComparer = stateEqualityComparer ?? EqualityComparer<TState>.Default;
+
+            var visited = new HashSet<TState>(equalityComparer);
+            var queue = new Queue<(TState State, List<TChange> Changes)>();
+
+            queue.Enqueue((initialState, new List<TChange>()));
+
+            double bestCost = double.MaxValue;
+            List<TChange>? bestResult = null; 
+            while (queue.TryDequeue(out var element))
+            {
+                var (currentState, currentChanges) = element;
+
+                var currentCost = getChangeCost(currentChanges);
+                if (currentCost >= bestCost)
+                {
+                    continue;
+                }
+                
+                if (equalityComparer.Equals(currentState, finalState))
+                {
+                    bestResult = currentChanges;
+                    bestCost = currentCost;
+                    continue;
+                }
+                
+                if (!visited.Add(currentState))
+                {
+                    continue;
+                }
+
+                foreach (var change in getStateChanges(currentState, currentChanges, finalState))
+                {
+                    var nextState = applyStateChange(currentState, change);
+                    var nextChanges = new List<TChange>(currentChanges) { change };
+                    queue.Enqueue((nextState, nextChanges));
+                }
+            }
+
+            return bestResult;
         }
         
         public static List<TChange>? GreedyBestFirst<TState, TChange>(
@@ -65,13 +117,16 @@ namespace PereViader.Utils.Common.Extensions
                 var currentState = currentStateInfo.Value.State;
                 var currentChanges = currentStateInfo.Value.Changes;
 
-                if (visited.Contains(currentState))
+                if (!visited.Add(currentState))
+                {
                     continue;
-
+                }
+                
                 if (equalityComparer.Equals(currentState, finalState))
+                {
                     return currentChanges;
+                }
 
-                visited.Add(currentState);
 
                 foreach (var change in getStateChanges(currentState, currentChanges, finalState))
                 {

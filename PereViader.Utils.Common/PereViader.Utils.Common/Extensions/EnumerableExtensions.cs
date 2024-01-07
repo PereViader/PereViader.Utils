@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace PereViader.Utils.Common.Extensions
@@ -136,6 +135,21 @@ namespace PereViader.Utils.Common.Extensions
             {
                 value = element;
                 return true;
+            }
+
+            value = default!;
+            return false;
+        }
+        
+        public static bool TryGetFirst<T>(this IEnumerable<T> source, Func<T, bool> predicate, out T value)
+        {
+            foreach (var element in source)
+            {
+                if (predicate.Invoke(element))
+                {
+                    value = element;
+                    return true;
+                }
             }
 
             value = default!;

@@ -6,31 +6,39 @@ namespace PereViader.Utils.Common.Test;
 public class SearchExtensionsTest
 {
     [Test]
-    public void BruteForce_OnCountFromZeroToThree_ReturnsAddOneThreeTimes()
+    public void BruteForceFirst()
     {
         int initialState = 0;
-        int finalState = 3;
-        var result = SearchExtensions.BruteForce<int, int>(
+        int finalState = 6;
+        var result = SearchExtensions.BruteForceFirst<int, int>(
             initialState,
             finalState,
-            (state, c, finalState) => new [] { -1, 1 },
+            (state, c, finalState) => new [] { -4, 1, 10, 5 },
             (s, c) => s + c);
 
-        Assert.That(result, Is.EquivalentTo(new [] { 1, 1, 1 }));
+        Assert.That(result, Is.EquivalentTo(new [] { -4, 10 }));
     }
     
     [Test]
-    public void TestNumberNavigation()
+    public void BruteForceBest()
+    {
+        int initialState = 0;
+        int finalState = 6;
+        var result = SearchExtensions.BruteForceBest<int, int>(
+            initialState,
+            finalState,
+            (state, c, finalState) => new [] { -4, 1, 10, 5 },
+            (s, c) => s + c,
+            c => c.Count * 1000 + c.Sum(Math.Abs));
+
+        Assert.That(result, Is.EquivalentTo(new [] { 1, 5 }));
+    }
+    
+    [Test]
+    public void GreedyBestFirst()
     {
         // Let's allow jumping to any number between state-5 and state+5
-        IEnumerable<int> GetPossibleChanges(int state, List<int> changes, int finalState)
-        {
-            for (var i = -5; i <= 5; i++)
-            {
-                if (i != 0) yield return i;
-            }
-        }
-        
+        IEnumerable<int> GetPossibleChanges(int state, List<int> changes, int finalState) => new[] { -5, 0, 5, 1 };
         int ApplyChange(int state, int change) => state + change;
         double Heuristic(int state) => Math.Abs(state - 6); // Assuming finalState is 6 for simplicity
         
