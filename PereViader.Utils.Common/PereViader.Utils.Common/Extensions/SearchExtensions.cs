@@ -8,7 +8,7 @@ namespace PereViader.Utils.Common.Extensions
         public static List<TChange>? BruteForce<TState, TChange>(
             TState initialState,
             TState finalState,
-            Func<TState, List<TChange>, IEnumerable<TChange>> getStateChanges,
+            Func<TState, List<TChange>, TState, IEnumerable<TChange>> getStateChanges,
             Func<TState, TChange, TState> applyStateChange,
             IEqualityComparer<TState>? stateEqualityComparer = null)
         {
@@ -31,7 +31,7 @@ namespace PereViader.Utils.Common.Extensions
 
                 visited.Add(currentState);
 
-                foreach (var change in getStateChanges(currentState, currentChanges))
+                foreach (var change in getStateChanges(currentState, currentChanges, finalState))
                 {
                     var nextState = applyStateChange(currentState, change);
                     var nextChanges = new List<TChange>(currentChanges) { change };
@@ -45,7 +45,7 @@ namespace PereViader.Utils.Common.Extensions
         public static List<TChange>? GreedyBestFirst<TState, TChange>(
             TState initialState,
             TState finalState,
-            Func<TState, IEnumerable<TChange>> getStateChanges,
+            Func<TState, List<TChange>, TState, IEnumerable<TChange>> getStateChanges,
             Func<TState, TChange, TState> applyStateChange,
             Func<TState, double> heuristic,
             IEqualityComparer<TState>? stateEqualityComparer = null)
@@ -73,7 +73,7 @@ namespace PereViader.Utils.Common.Extensions
 
                 visited.Add(currentState);
 
-                foreach (var change in getStateChanges(currentState))
+                foreach (var change in getStateChanges(currentState, currentChanges, finalState))
                 {
                     var nextState = applyStateChange(currentState, change);
                     if (!visited.Contains(nextState))

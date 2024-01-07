@@ -13,7 +13,7 @@ public class SearchExtensionsTest
         var result = SearchExtensions.BruteForce<int, int>(
             initialState,
             finalState,
-            (s, c) => new [] { -1, 1 },
+            (state, c, finalState) => new [] { -1, 1 },
             (s, c) => s + c);
 
         Assert.That(result, Is.EquivalentTo(new [] { 1, 1, 1 }));
@@ -23,7 +23,7 @@ public class SearchExtensionsTest
     public void TestNumberNavigation()
     {
         // Let's allow jumping to any number between state-5 and state+5
-        IEnumerable<int> GetPossibleChanges(int state)
+        IEnumerable<int> GetPossibleChanges(int state, List<int> changes, int finalState)
         {
             for (var i = -5; i <= 5; i++)
             {
