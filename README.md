@@ -41,7 +41,8 @@ When developing in Unity3d, these assets are an integral part of my development 
 
 ### Benchmarking and Performance analysis
 - https://github.com/dotnet/BenchmarkDotNet : Benchmarking library for c# code
-- https://github.com/needle-tools/compilation-visualizer : Unity3d tool to visualize the compilation tree 
+- https://github.com/needle-tools/compilation-visualizer : Unity3d tool to visualize the compilation tree
+- https://github.com/brunomikoski/SpriteAuditor: Benchmark sprite usages
 - https://github.com/Unity-Technologies/UnityDataTools : Be able to programmatically query the asset database of unity from the outside. Can provide a sql database of the assets where sql queries can be done on them to programmatically look for issues on the assets
 - https://github.com/Unity-Technologies/ProjectAuditor : Provides hints, tips and fixes to apply on your Unity3d project 
 - https://superluminal.eu/ : Agnostic stack polling analyzer that polls at regular intervals and provides a completely external overview of the performance of applications
