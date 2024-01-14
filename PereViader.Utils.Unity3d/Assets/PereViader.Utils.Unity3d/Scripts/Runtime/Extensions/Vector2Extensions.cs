@@ -4,6 +4,8 @@ namespace PereViader.Utils.Unity3d.Extensions
 {
     public static class Vector2Extensions
     {
+        public static readonly Vector2 Half = new(0.5f, 0.5f); 
+        
         public static Vector3 ToVector3XY(this Vector2 v, float z = 0f) => new Vector3(v.x, v.y, z);
         public static Vector3 ToVector3XZ(this Vector2 v, float y = 0f) => new Vector3(v.x, y, v.y);
         public static Vector3 ToVector3YX(this Vector2 v, float z = 0f) => new Vector3(v.y, v.x, z);
