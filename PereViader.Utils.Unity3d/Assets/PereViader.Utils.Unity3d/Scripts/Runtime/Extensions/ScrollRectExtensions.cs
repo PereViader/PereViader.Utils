@@ -25,6 +25,15 @@ namespace PereViader.Utils.Unity3d.Extensions
         {
             scrollRect.verticalNormalizedPosition = 0f;
         }
+
+        public static void SetElementNormalizedPosition(
+            this ScrollRect scrollRect,
+            RectTransform rectTransform,
+            Vector2 normalizedViewportPosition)
+        {
+            scrollRect.normalizedPosition =
+                scrollRect.GetElementNormalizedPosition(rectTransform, normalizedViewportPosition);
+        }
         
         public static Vector2 GetElementNormalizedPosition(
             this ScrollRect scrollRect,
@@ -52,6 +61,16 @@ namespace PereViader.Utils.Unity3d.Extensions
 
             return new Vector2(x, y);
         }
+
+        public static void SetElementHorizontalNormalizedPosition(
+            this ScrollRect scrollRect,
+            RectTransform rectTransform,
+            float normalizedViewportPosition)
+        {
+            scrollRect.horizontalNormalizedPosition = scrollRect.GetElementHorizontalNormalizedPosition(
+                rectTransform,
+                normalizedViewportPosition);
+        }
         
         public static float GetElementHorizontalNormalizedPosition(
             this ScrollRect scrollRect,
@@ -68,6 +87,16 @@ namespace PereViader.Utils.Unity3d.Extensions
                 min, 
                 max, 
                 windowSize, 
+                normalizedViewportPosition);
+        }
+
+        public static void SetElementVerticalNormalizedPosition(
+            this ScrollRect scrollRect,
+            RectTransform rectTransform,
+            float normalizedViewportPosition)
+        {
+            scrollRect.verticalNormalizedPosition = scrollRect.GetElementVerticalNormalizedPosition(
+                rectTransform,
                 normalizedViewportPosition);
         }
         

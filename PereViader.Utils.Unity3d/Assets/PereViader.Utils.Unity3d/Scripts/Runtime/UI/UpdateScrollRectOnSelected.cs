@@ -9,6 +9,8 @@ namespace PereViader.Utils.Unity3d.UI
     {
         [Tooltip("Can be null, will use self")]
         public RectTransform RectTransform;
+        [Tooltip("Can be null, will use GetComponentInParent")]
+        public ScrollRect ScrollRect;
         public Vector2 NormalizedViewportPosition = Vector2Extensions.Half;
 
         public void Awake()
@@ -25,19 +27,24 @@ namespace PereViader.Utils.Unity3d.UI
             {
                 return;
             }
-            
-            var scrollRect = GetComponentInParent<ScrollRect>();
-            if (scrollRect == null)
+
+            if (ScrollRect == null)
             {
-                Debug.LogError("There was no ScrollRect to scroll", this);
+                ScrollRect = GetComponentInParent<ScrollRect>();
+            }
+            
+            if (ScrollRect == null)
+            {
+                Debug.LogError("Could not get ScrollRect to scroll", this);
             }
 
-            scrollRect.normalizedPosition = scrollRect.GetElementNormalizedPosition(RectTransform, NormalizedViewportPosition);        
+            ScrollRect.SetElementNormalizedPosition(RectTransform, NormalizedViewportPosition);        
         }
 
         private void Reset()
         {
             RectTransform = this.UnsafeGetRectTransform();
+            ScrollRect = GetComponentInParent<ScrollRect>();
         }
     }
 }
