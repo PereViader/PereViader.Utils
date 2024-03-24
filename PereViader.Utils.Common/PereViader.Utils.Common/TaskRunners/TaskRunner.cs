@@ -42,6 +42,7 @@ namespace PereViader.Utils.Common.TaskRunners
                 try
                 {
                     await Func(CancellationTokenSource.Token);
+                    TaskCompletionSource.TrySetResult(null);
                 }
                 catch (OperationCanceledException)
                 {
@@ -51,9 +52,50 @@ namespace PereViader.Utils.Common.TaskRunners
                 {
                     TaskCompletionSource.TrySetException(ex);
                 }
-                finally
+            }
+
+            public void Dispose()
+            {
+                CancellationTokenSource.Dispose();
+            }
+        }
+        
+        private sealed class FuncTaskRunnerQueueElement<TReturn> : ITaskRunnerQueueElement
+        {
+            public Func<CancellationToken, Task<TReturn>> Func { get; }
+            
+            public TaskCompletionSource<TReturn> TaskCompletionSource { get; }
+            public CancellationTokenSource CancellationTokenSource { get; }
+
+            public FuncTaskRunnerQueueElement(Func<CancellationToken, Task<TReturn>> func, TaskCompletionSource<TReturn> taskCompletionSource, CancellationTokenSource cancellationTokenSource)
+            {
+                Func = func;
+                TaskCompletionSource = taskCompletionSource;
+                CancellationTokenSource = cancellationTokenSource;
+                TaskCompletionSource.LinkCancellationToken(CancellationTokenSource.Token);
+            }
+            
+            public async Task Run()
+            {
+                if (CancellationTokenSource.Token.IsCancellationRequested)
                 {
-                    TaskCompletionSource.TrySetResult(null);
+                    TaskCompletionSource.TrySetCanceled();
+                    return;
+                }
+
+                try
+                {
+                    var result = await Func(CancellationTokenSource.Token);
+                    TaskCompletionSource.TrySetResult(result);
+
+                }
+                catch (OperationCanceledException)
+                {
+                    TaskCompletionSource.TrySetCanceled();
+                }
+                catch (Exception ex)
+                {
+                    TaskCompletionSource.TrySetException(ex);
                 }
             }
 
@@ -148,14 +190,104 @@ namespace PereViader.Utils.Common.TaskRunners
             }
         }
 
-        private sealed class FuncWithStateTaskRunnerQueueElement<T> : ITaskRunnerQueueElement
+        private sealed class EnumerableFuncTaskRunnerQueueElement<TReturn> : ITaskRunnerQueueElement
         {
-            public Func<T, CancellationToken, Task> Func { get; }
-            public T State { get; }
+            public IEnumerable<Func<CancellationToken, Task<TReturn>>> Funcs { get; }
+            
+            public TaskCompletionSource<TReturn[]> TaskCompletionSource { get; }
+            public CancellationTokenSource CancellationTokenSource { get; }
+            private bool StopOnFirstException { get; }
+
+            public EnumerableFuncTaskRunnerQueueElement(IEnumerable<Func<CancellationToken, Task<TReturn>>> funcs, TaskCompletionSource<TReturn[]> taskCompletionSource, CancellationTokenSource cancellationTokenSource, bool stopOnFirstException)
+            {
+                Funcs = funcs;
+                TaskCompletionSource = taskCompletionSource;
+                CancellationTokenSource = cancellationTokenSource;
+                StopOnFirstException = stopOnFirstException;
+                TaskCompletionSource.LinkCancellationToken(CancellationTokenSource.Token);
+            }
+            
+            public async Task Run()
+            {
+                if (CancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    TaskCompletionSource.TrySetCanceled();
+                    return;
+                }
+
+                List<TReturn> results = new();
+
+                if(StopOnFirstException)
+                {
+                    try
+                    {
+                        foreach (var func in Funcs)
+                        {
+                            var result = await func(CancellationTokenSource.Token);
+                            results.Add(result);
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        TaskCompletionSource.TrySetCanceled();
+                    }
+                    catch (Exception ex)
+                    {
+                        TaskCompletionSource.TrySetException(ex);
+                    }
+                }
+                else
+                {
+                    bool isCanceled = false;
+                    List<Exception>? exceptions = null;
+                    foreach (var func in Funcs)
+                    {
+                        try
+                        {
+                            var result = await func(CancellationTokenSource.Token);
+                            results.Add(result);
+                        }
+                        catch (OperationCanceledException ex)
+                        {
+                            isCanceled = true;
+                            exceptions?.Add(ex);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            exceptions ??= new List<Exception>();
+                            exceptions.Add(ex);
+                        }
+                    }
+
+                    if (exceptions != null)
+                    {
+                        TaskCompletionSource.TrySetException(exceptions);
+                    }
+                    else if (isCanceled)
+                    {
+                        TaskCompletionSource.TrySetCanceled();
+                    }
+                }
+                
+                TaskCompletionSource.TrySetResult(results.ToArray());
+            }
+
+            public void Dispose()
+            {
+                CancellationTokenSource.Dispose();
+            }
+        }
+
+        
+        private sealed class FuncWithStateTaskRunnerQueueElement<TArg> : ITaskRunnerQueueElement
+        {
+            public Func<TArg, CancellationToken, Task> Func { get; }
+            public TArg State { get; }
             public TaskCompletionSource<object?> TaskCompletionSource { get; }
             public CancellationTokenSource CancellationTokenSource { get; }
 
-            public FuncWithStateTaskRunnerQueueElement(Func<T, CancellationToken, Task> func, T state, TaskCompletionSource<object?> taskCompletionSource, CancellationTokenSource cancellationTokenSource)
+            public FuncWithStateTaskRunnerQueueElement(Func<TArg, CancellationToken, Task> func, TArg state, TaskCompletionSource<object?> taskCompletionSource, CancellationTokenSource cancellationTokenSource)
             {
                 Func = func;
                 State = state;
@@ -186,6 +318,50 @@ namespace PereViader.Utils.Common.TaskRunners
                 finally
                 {
                     TaskCompletionSource.TrySetResult(null);
+                }
+            }
+
+            public void Dispose()
+            {
+                CancellationTokenSource.Dispose();
+            }
+        }
+        
+        private sealed class FuncWithStateTaskRunnerQueueElement<TArg, TReturn> : ITaskRunnerQueueElement
+        {
+            public Func<TArg, CancellationToken, Task<TReturn>> Func { get; }
+            public TArg State { get; }
+            public TaskCompletionSource<TReturn> TaskCompletionSource { get; }
+            public CancellationTokenSource CancellationTokenSource { get; }
+
+            public FuncWithStateTaskRunnerQueueElement(Func<TArg, CancellationToken, Task<TReturn>> func, TArg state, TaskCompletionSource<TReturn> taskCompletionSource, CancellationTokenSource cancellationTokenSource)
+            {
+                Func = func;
+                State = state;
+                TaskCompletionSource = taskCompletionSource;
+                CancellationTokenSource = cancellationTokenSource;
+            }
+            
+            public async Task Run()
+            {
+                if (CancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    TaskCompletionSource.TrySetCanceled();
+                    return;
+                }
+
+                try
+                {
+                    var result = await Func(State, CancellationTokenSource.Token);
+                    TaskCompletionSource.TrySetResult(result);
+                }
+                catch (OperationCanceledException)
+                {
+                    TaskCompletionSource.TrySetCanceled();
+                }
+                catch (Exception ex)
+                {
+                    TaskCompletionSource.TrySetException(ex);
                 }
             }
 
@@ -273,6 +449,97 @@ namespace PereViader.Utils.Common.TaskRunners
                 }
                 
                 TaskCompletionSource.TrySetResult(null);
+            }
+
+            public void Dispose()
+            {
+                CancellationTokenSource.Dispose();
+            }
+        }
+        
+        
+        private sealed class EnumerableFuncWithStateTaskRunnerQueueElement<TArg, TReturn> : ITaskRunnerQueueElement
+        {
+            public IEnumerable<Func<TArg, CancellationToken, Task<TReturn>>> Funcs { get; }
+            public TaskCompletionSource<TReturn[]> TaskCompletionSource { get; }
+            public CancellationTokenSource CancellationTokenSource { get; }
+            public TArg State { get; }
+            private bool StopOnFirstException { get; }
+
+            public EnumerableFuncWithStateTaskRunnerQueueElement(IEnumerable<Func<TArg, CancellationToken, Task<TReturn>>> funcs, TaskCompletionSource<TReturn[]> taskCompletionSource, CancellationTokenSource cancellationTokenSource, bool stopOnFirstException, TArg state)
+            {
+                Funcs = funcs;
+                TaskCompletionSource = taskCompletionSource;
+                CancellationTokenSource = cancellationTokenSource;
+                StopOnFirstException = stopOnFirstException;
+                State = state;
+                TaskCompletionSource.LinkCancellationToken(CancellationTokenSource.Token);
+            }
+            
+            public async Task Run()
+            {
+                if (CancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    TaskCompletionSource.TrySetCanceled();
+                    return;
+                }
+
+                List<TReturn> results = new();
+
+                if(StopOnFirstException)
+                {
+                    try
+                    {
+                        foreach (var func in Funcs)
+                        {
+                            var result = await func(State, CancellationTokenSource.Token);
+                            results.Add(result);
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        TaskCompletionSource.TrySetCanceled();
+                    }
+                    catch (Exception ex)
+                    {
+                        TaskCompletionSource.TrySetException(ex);
+                    }
+                }
+                else
+                {
+                    bool isCanceled = false;
+                    List<Exception>? exceptions = null;
+                    foreach (var func in Funcs)
+                    {
+                        try
+                        {
+                            var result = await func(State, CancellationTokenSource.Token);
+                            results.Add(result);
+                        }
+                        catch (OperationCanceledException ex)
+                        {
+                            isCanceled = true;
+                            exceptions?.Add(ex);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            exceptions ??= new List<Exception>();
+                            exceptions.Add(ex);
+                        }
+                    }
+
+                    if (exceptions != null)
+                    {
+                        TaskCompletionSource.TrySetException(exceptions);
+                    }
+                    else if (isCanceled)
+                    {
+                        TaskCompletionSource.TrySetCanceled();
+                    }
+                }
+                
+                TaskCompletionSource.TrySetResult(results.ToArray());
             }
 
             public void Dispose()
@@ -472,6 +739,25 @@ namespace PereViader.Utils.Common.TaskRunners
             await taskCompletionSource.Task;
         }
         
+        public async Task<TReturn> RunSequenced<TReturn>(Func<CancellationToken, Task<TReturn>> func, CancellationToken cancellationToken = default)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+            
+            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
+            var taskCompletionSource = cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<TReturn>();
+            _taskSequenceQueue.Enqueue(new FuncTaskRunnerQueueElement<TReturn>(func, taskCompletionSource, cancellationTokenSource));
+
+            if (!_isRunning)
+            {
+                ProcessSequenceQueue();
+            }
+
+            return await taskCompletionSource.Task;
+        }
+        
         public async Task RunSequenced<TArg>(Func<TArg, CancellationToken, Task> func, TArg arg, CancellationToken cancellationToken = default)
         {
             if (_isDisposed)
@@ -489,6 +775,25 @@ namespace PereViader.Utils.Common.TaskRunners
             }
 
             await taskCompletionSource.Task;
+        }
+        
+        public async Task<TReturn> RunSequenced<TArg, TReturn>(Func<TArg, CancellationToken, Task<TReturn>> func, TArg arg, CancellationToken cancellationToken = default)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+            
+            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
+            var taskCompletionSource = cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<TReturn>();
+            _taskSequenceQueue.Enqueue(new FuncWithStateTaskRunnerQueueElement<TArg, TReturn>(func, arg, taskCompletionSource, cancellationTokenSource));
+
+            if (!_isRunning)
+            {
+                ProcessSequenceQueue();
+            }
+
+            return await taskCompletionSource.Task;
         }
         
         public async Task RunSequenced(IEnumerable<Func<CancellationToken, Task>> funcs, bool stopOnFirstException = false, CancellationToken cancellationToken = default)
@@ -509,6 +814,25 @@ namespace PereViader.Utils.Common.TaskRunners
 
             await taskCompletionSource.Task;
         }
+        
+        public async Task<TReturn[]> RunSequenced<TReturn>(IEnumerable<Func<CancellationToken, Task<TReturn>>> funcs, bool stopOnFirstException = false, CancellationToken cancellationToken = default)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+
+            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
+            var taskCompletionSource = cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<TReturn[]>();
+            _taskSequenceQueue.Enqueue(new EnumerableFuncTaskRunnerQueueElement<TReturn>(funcs, taskCompletionSource, cancellationTokenSource, stopOnFirstException));
+            
+            if (!_isRunning)
+            {
+                ProcessSequenceQueue();
+            }
+
+            return await taskCompletionSource.Task;
+        }
 
         public async Task RunSequenced<TArg>(IEnumerable<Func<TArg, CancellationToken, Task>> funcs, TArg arg, 
             bool stopOnFirstException = false, CancellationToken cancellationToken = default)
@@ -528,6 +852,26 @@ namespace PereViader.Utils.Common.TaskRunners
             }
 
             await taskCompletionSource.Task;
+        }
+        
+        public async Task<TReturn[]> RunSequenced<TArg, TReturn>(IEnumerable<Func<TArg, CancellationToken, Task<TReturn>>> funcs, TArg arg, 
+            bool stopOnFirstException = false, CancellationToken cancellationToken = default)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+
+            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
+            var taskCompletionSource = cancellationTokenSource.Token.CreateLinkedTaskCompletionSource<TReturn[]>();
+            _taskSequenceQueue.Enqueue(new EnumerableFuncWithStateTaskRunnerQueueElement<TArg, TReturn>(funcs, taskCompletionSource, cancellationTokenSource, stopOnFirstException, arg));
+            
+            if (!_isRunning)
+            {
+                ProcessSequenceQueue();
+            }
+
+            return await taskCompletionSource.Task;
         }
 
         private async void ProcessSequenceQueue()
