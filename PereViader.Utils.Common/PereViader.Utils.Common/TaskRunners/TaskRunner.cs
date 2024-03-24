@@ -297,13 +297,40 @@ namespace PereViader.Utils.Common.TaskRunners
             return func(_cancellationTokenSource.Token);
         }
         
+        public Task<TReturn> RunInstantly<TReturn>(Func<CancellationToken, Task<TReturn>> func)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+            
+            return func(_cancellationTokenSource.Token);
+        }
+        
         public async Task RunInstantly(Func<CancellationToken, Task> func, CancellationToken cancellationToken)
         {
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
             await func(linkedCts.Token);
         }
         
+        public async Task<TReturn> RunInstantly<TReturn>(Func<CancellationToken, Task<TReturn>> func, CancellationToken cancellationToken)
+        {
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
+            return await func(linkedCts.Token);
+        }
+        
         public Task RunInstantly(IEnumerable<Func<CancellationToken, Task>> funcs)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+
+            var tasks = funcs.Select((x, ct) => x(ct), _cancellationTokenSource.Token);
+            return Task.WhenAll(tasks);
+        }
+        
+        public Task<TReturn[]> RunInstantly<TReturn>(IEnumerable<Func<CancellationToken, Task<TReturn>>> funcs)
         {
             if (_isDisposed)
             {
@@ -325,8 +352,30 @@ namespace PereViader.Utils.Common.TaskRunners
             var tasks = funcs.Select((x, ct) => x(ct), linkedCts.Token);
             await Task.WhenAll(tasks);
         }
+        
+        public async Task<TReturn[]> RunInstantly<TReturn>(IEnumerable<Func<CancellationToken, Task<TReturn>>> funcs, CancellationToken cancellationToken)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
+            var tasks = funcs.Select((x, ct) => x(ct), linkedCts.Token);
+            return await Task.WhenAll(tasks);
+        }
 
         public Task RunInstantly<TArg>(Func<TArg, CancellationToken, Task> func, TArg arg)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+
+            return func(arg, _cancellationTokenSource.Token);
+        }
+        
+        public Task<TReturn> RunInstantly<TArg, TReturn>(Func<TArg, CancellationToken, Task<TReturn>> func, TArg arg)
         {
             if (_isDisposed)
             {
@@ -347,7 +396,29 @@ namespace PereViader.Utils.Common.TaskRunners
             await func(arg, linkedCts.Token);
         }
         
+        public async Task<TReturn> RunInstantly<TArg, TReturn>(Func<TArg, CancellationToken, Task<TReturn>> func, TArg arg, CancellationToken cancellationToken)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+            
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
+            return await func(arg, linkedCts.Token);
+        }
+        
         public Task RunInstantly<TArg>(IEnumerable<Func<TArg, CancellationToken, Task>> funcs, TArg arg)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+
+            var tasks = funcs.Select((x, pair) => x(pair.arg, pair.Token), (_cancellationTokenSource.Token, arg));
+            return Task.WhenAll(tasks);
+        }
+        
+        public Task<TReturn[]> RunInstantly<TArg, TReturn>(IEnumerable<Func<TArg, CancellationToken, Task<TReturn>>> funcs, TArg arg)
         {
             if (_isDisposed)
             {
@@ -368,6 +439,18 @@ namespace PereViader.Utils.Common.TaskRunners
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
             var tasks = funcs.Select((x, pair) => x(pair.arg, pair.Token), (linkedCts.Token, arg));
             await Task.WhenAll(tasks);
+        }
+        
+        public async Task<TReturn[]> RunInstantly<TArg, TReturn>(IEnumerable<Func<TArg, CancellationToken, Task<TReturn>>> funcs, TArg arg, CancellationToken cancellationToken)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("TaskRunner", "Cannot run task on a disposed TaskRunner.");
+            }
+
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
+            var tasks = funcs.Select((x, pair) => x(pair.arg, pair.Token), (linkedCts.Token, arg));
+            return await Task.WhenAll(tasks);
         }
 
         public async Task RunSequenced(Func<CancellationToken, Task> func, CancellationToken cancellationToken = default)
