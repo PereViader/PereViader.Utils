@@ -2,6 +2,31 @@
 
 namespace PereViader.Utils.Common.Disposables
 {
+    public struct ValueDisposable : IDisposable
+    {
+        private readonly Action _action;
+        private bool _disposed;
+        
+        public ValueDisposable(Action action)
+        {
+            _action = action;
+            _disposed = false;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            _action.Invoke();
+        }
+
+        public Disposable ToDisposable() => new(_action);
+    }
+    
     public struct ValueDisposable<T> : IDisposable<T>
     {
         private readonly Action<T> _action;
@@ -27,6 +52,6 @@ namespace PereViader.Utils.Common.Disposables
             _action.Invoke(Value);
         }
 
-        public Disposable<T> AsDisposable() => new(Value, _action);
+        public Disposable<T> ToDisposable() => new(Value, _action);
     }
 }

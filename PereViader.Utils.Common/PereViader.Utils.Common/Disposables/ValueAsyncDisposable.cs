@@ -3,6 +3,31 @@ using System.Threading.Tasks;
 
 namespace PereViader.Utils.Common.Disposables
 {
+    public struct ValueAsyncDisposable : IAsyncDisposable
+    {
+        private readonly Func<ValueTask> _func;
+        private bool _disposed;
+
+        public ValueAsyncDisposable(Func<ValueTask> func)
+        {
+            _func = func;
+            _disposed = false;
+        }
+        
+        public ValueTask DisposeAsync()
+        {
+            if (_disposed)
+            {
+                return default;
+            }
+
+            _disposed = true;
+            return _func.Invoke();
+        }
+        
+        public AsyncDisposable ToAsyncDisposable() => new(_func);
+    }
+    
     public struct ValueAsyncDisposable<T> : IAsyncDisposable<T>
     {
         private readonly Func<T, ValueTask> _func;
