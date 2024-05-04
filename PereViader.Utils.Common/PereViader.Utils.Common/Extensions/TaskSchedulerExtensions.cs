@@ -62,7 +62,8 @@ namespace PereViader.Utils.Common.Extensions
             // a safe version that has to flow the execution context
             public void OnCompleted(Action continuation)
             {
-                throw new NotImplementedException(nameof(OnCompleted));
+                //It will never be called
+                throw new InvalidOperationException(nameof(OnCompleted));
             }
 
             // an unsafe version that doesn't have to flow the execution context
