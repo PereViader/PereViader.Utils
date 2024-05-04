@@ -47,6 +47,10 @@ When developing in Unity3d, these assets are an integral part of my development 
 - https://github.com/Unity-Technologies/ProjectAuditor : Provides hints, tips and fixes to apply on your Unity3d project 
 - https://superluminal.eu/ : Agnostic stack polling analyzer that polls at regular intervals and provides a completely external overview of the performance of applications
 
+### Multiplatform
+
+- https://github.com/VolodymyrBS/WebGLThreadingPatcher: Utility to be able to work with Tasks on webgl
+
 ## CI and CD
 - https://github.com/PereViader/CSharpProjectToUnity3dPackage : Can turn a c# solution to the unity package manager format needed to be able to consume it by unity3d 
 
