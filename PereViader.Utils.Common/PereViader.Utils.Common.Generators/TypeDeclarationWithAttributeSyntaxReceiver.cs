@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace PereViader.Utils.Common.Generators
 {
     public class TypeDeclarationWithAttributeSyntaxReceiver<TDeclaration, TGenerator> : ISyntaxReceiver
-        where TDeclaration : TypeDeclarationSyntax
+        where TDeclaration : BaseTypeDeclarationSyntax
     {
         public List<(TDeclaration Declaration, AttributeSyntax AttributeSyntax)> Candidates { get; } = new ();
         public string AttributeName { get; }
