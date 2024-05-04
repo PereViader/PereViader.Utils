@@ -3,7 +3,7 @@
 namespace PereViader.Utils.Common.Generators
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false)]
-    public sealed class GenerateToString : Attribute
+    public sealed class GenerateToStringAttribute : Attribute
     {
     }
 }
