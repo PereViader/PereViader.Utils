@@ -9,15 +9,12 @@ jobs:
   build_and_publish:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - uses: actions/checkout@v4.1.4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0'  # Using .NET 6 SDK
-
+          dotnet-version: '6.0'
+          
       - run: dotnet test PereViader.Utils.Common
       - run: dotnet build PereViader.Utils.Common --configuration Release
       
@@ -26,7 +23,6 @@ jobs:
         with:
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           PROJECT_FILE_PATH: PereViader.Utils.Common/PereViader.Utils.Common/PereViader.Utils.Common.csproj
-          TAG_COMMIT: true
           REBUILD_PROJECT: false
 
       - name: Publish Generators
@@ -35,4 +31,3 @@ jobs:
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           PROJECT_FILE_PATH: PereViader.Utils.Common/PereViader.Utils.Common.Generators/PereViader.Utils.Common.Generators.csproj
           REBUILD_PROJECT: false
-          VERSION_FILE_PATH: PereViader.Utils.Common/PereViader.Utils.Common/PereViader.Utils.Common.csproj
