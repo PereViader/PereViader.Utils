@@ -11,6 +11,7 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/PereViader/PereViader.Utils</RepositoryUrl>
 
+        <Version>1.0.1</Version>
         <developmentDependency>true</developmentDependency>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <IncludeBuildOutput>false</IncludeBuildOutput>
