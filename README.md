@@ -1,3 +1,5 @@
+[![Publish NuGet Package](https://github.com/PereViader/PereViader.Utils/actions/workflows/PublishNugetPackage.yml/badge.svg)](https://github.com/PereViader/PereViader.Utils/actions/workflows/PublishNugetPackage.yml)
+
 # PereViader.Utils
 
 ## Overview
