@@ -1,37 +1,35 @@
-[![Publish NuGet Package](https://github.com/PereViader/PereViader.Utils/actions/workflows/PublishNugetPackage.yml/badge.svg)](https://github.com/PereViader/PereViader.Utils/actions/workflows/PublishNugetPackage.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Publish NuGet Package](https://github.com/PereViader/PereViader.Utils/actions/workflows/PublishNugetPackage.yml/badge.svg)](https://github.com/PereViader/PereViader.Utils/actions/workflows/PublishNugetPackage.yml)
 
 # PereViader.Utils
 
 ## Overview
-`PereViader.Utils` is a collection of C# utility libraries designed to streamline programming tasks across various contexts. 
+The project `PereViader.Utils` is a collection of C# utilities started with the aim to not need to reimplement or remember how I previously solved issues and quickly jumpstart any personal project to a state where I can quickly start developing new stuff.
 
-Given that this library is primarily intended for my personal use and is currently in its early development phases, it is essential to clarify that extensive efforts toward ensuring backward compatibility will not be a primary focus. Consequently, users should be prepared for the possibility of encountering changes that may disrupt functionality if they opt to utilize the library and subsequently update it in the future.
+Given that this library is primarily intended for my personal use, extensive efforts won't be made towards ensuring backward compatibility. Consequently, be prepared to encounter functionality that has changed / been removed, if you opt to utilize the library and subsequently update it in the future.
 
-This repository is divided into three main projects: `PereViader.Utils.Common`, `PereViader.Utils.Unity3d`, and `PereViader.Utils.Unity3dCodegen`, each catering to different needs and environments.
-
-Developed primarily for my personal use as a game developer, these libraries reflect a practical approach to common challenges in game development. I've made them public to assist others in the community, understanding that while my solutions are tailored to game development, they may be beneficial in a variety of programming contexts.
+The project consists of the the following "modules"
 
 ### PereViader.Utils.Common
-This library offers a suite of general utility functions and extensions that are useful in a wide range of C# applications, providing streamlined solutions for common programming tasks.
+Utilites that can be applied to any c# game / application
+
+### PereViader.Utils.Common.Generators
+Roslyn source generators that can be applied to any c# game / application
 
 ### PereViader.Utils.Unity3d
-Tailored for Unity3D developers, this library includes a set of utilities and extensions specifically designed to enhance the development experience in Unity3D.
-
-### PereViader.Utils.Unity3dCodegen
-Focusing on source generation for Unity3D, this project provides tools and utilities that automate and simplify code generation within the Unity3D environment, enhancing efficiency and productivity.
+Utilites specifically tailored towards Unity3d game development
 
 ## Installation
-For now, this project is still a work in progress and thus cannot be easily installed. You can manually install it in your project by copying and pasting the relevant C# files. 
-I have plans to publish this project in the following ways:
-- A NuGet package with `PereViader.Utils.Common`
-- A UPM (Unity Package Manager) package published on OpenUPM with the contents of both `PereViader.Utils.Common` and `PereViader.Utils.Unity3d`
-- As code generators in Unity still can't be included through OpenUPM, my current plan is to publish the DLL to NuGet and as a release on GitHub, which you can download and include in your project manually.
+- `PereViader.Utils.Common` can be installed through Nuget here https://www.nuget.org/packages/PereViader.Utils.Common/
+- `PereViader.Utils.Common.Generators` can be installed through Nuget here https://www.nuget.org/packages/PereViader.Utils.Common.Generators/
+- `PereViader.Utils.Unity3d` given the build/release pipeline is not yet setup, download the source and install it manually.
 
 ## Contributing
-We welcome contributions to all parts of PereViader.Utils. There are currently no contributing guidelines, but all PRs are welcome. We can continue the conversation there.
-
+We welcome bug reports and feature requests through issues.
+We welcome contributions through PRs.
+Beware that merging of PRs is not guaranteed given this is a very opinionated personal project. 
 
 ## External projects
+This section is destined as a collection of useful third party projects that have previously given me good results and may want to use in the future. 
 
 ### Workflow
 When developing in Unity3d, these assets are an integral part of my development plan to a quick add menu for the following projects.
@@ -50,12 +48,10 @@ When developing in Unity3d, these assets are an integral part of my development 
 - https://superluminal.eu/ : Agnostic stack polling analyzer that polls at regular intervals and provides a completely external overview of the performance of applications
 
 ### Multiplatform
-
 - https://github.com/VolodymyrBS/WebGLThreadingPatcher: Utility to be able to work with Tasks on webgl
 
 ## CI and CD
 - https://github.com/PereViader/CSharpProjectToUnity3dPackage : Can turn a c# solution to the unity package manager format needed to be able to consume it by unity3d 
-
 
 ## Git
 - https://github.com/rtyley/bfg-repo-cleaner : Easily remove unwanted data from the git history   
