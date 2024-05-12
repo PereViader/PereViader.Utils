@@ -1,0 +1,14 @@
+{
+    "name": "com.pereviader.utils.unity3d",
+    "version": "$version",
+    "displayName": "PereViader.Utils.Unity3d",
+    "description": "Utilites specifically tailored towards Unity3d game development",
+    "unity": "2021.1",
+    "documentationUrl": "https://github.com/PereViader/PereViader.Utils",
+    "changelogUrl": "https://github.com/PereViader/PereViader.Utils/commits/main/",
+    "licensesUrl": "https://opensource.org/license/mit",
+    "author": {
+        "name": "Pere Viader",
+        "url": "https://github.com/PereViader"
+    }
+}
