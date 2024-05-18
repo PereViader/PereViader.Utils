@@ -10,5 +10,12 @@
     "author": {
         "name": "Pere Viader",
         "url": "https://github.com/PereViader"
-    }
+    },
+    "samples": [
+        {
+            "displayName": "Samples",
+            "description": "Samples for PereViader.Utils.Unity3d",
+            "path": "Samples~"
+        }
+    ]
 }

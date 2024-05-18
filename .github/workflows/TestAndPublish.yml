@@ -1,0 +1,22 @@
+name: Test and publish
+on: 
+  workflow_call:
+  workflow_dispatch:
+#  push:
+#    branches:
+#      - main
+
+jobs:
+    TestCommon:
+      uses: ./.github/workflows/TestCommon.yml
+    
+    TestUnity3d:
+      uses: ./.github/workflows/TestUnity3d.yml
+    
+    PublishNugetPackage:
+      needs: [TestCommon, TestUnity3d]
+      uses: ./.github/workflows/PublishNugetPackage.yml
+    
+    PublishUnity3dPackage:
+      needs: [PublishNugetPackage]
+      uses: ./.github/workflows/PublishUnity3dPackage.yml

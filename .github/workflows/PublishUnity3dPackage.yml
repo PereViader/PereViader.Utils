@@ -1,0 +1,33 @@
+name: Publish Unity3d Package
+on: 
+  workflow_call:
+  workflow_dispatch:
+      
+env:
+  version_file: PereViader.Utils.Common/PereViader.Utils.Common/PereViader.Utils.Common.csproj
+
+jobs:
+  PublishUnity3dPackage:
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4.1.4
+
+      - id: get-version
+        run: |
+          version=$(grep -oP '(?<=<Version>)[^<]+' "${{ env.version_file }}")
+          echo "##[set-output name=version;]$version"
+
+      - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnityPackageReleaseFolder.sh
+      - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnity3dMetas.sh
+      - run: npm pack UnityPackageRelease
+
+      - name: Create github release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: PereViader.Utils.Unity3d ${{ steps.get-version.outputs.version }}
+          files: |
+            com.pereviader.utils.unity3d-${{ steps.get-version.outputs.version }}.tgz

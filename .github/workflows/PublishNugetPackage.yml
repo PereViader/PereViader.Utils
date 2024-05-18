@@ -1,21 +1,20 @@
-name: Publish NuGet Package
+name: Publish Nuget Package
 
-on:
-  push:
-    branches:
-      - main
+on: 
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
-  build_and_publish:
+  PublishNugetPackage:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4.1.4
+
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '6.0'
           
-      - run: dotnet test PereViader.Utils.Common
       - run: dotnet build PereViader.Utils.Common --configuration Release
       
       - name: Publish Common

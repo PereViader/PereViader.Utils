@@ -1,0 +1,28 @@
+name: Test Unity3d
+on: 
+  workflow_call:
+  workflow_dispatch:  
+
+env:
+  unity_project: PereViader.Utils.Unity3d
+
+jobs:
+  PublishUnity3dPackage:
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4.1.4
+
+      - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/UpdateUtilsDll.sh
+
+      - uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: ${{ env.unity_project}}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
