@@ -8,25 +8,10 @@
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>Nullable</WarningsAsErrors>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <RepositoryUrl>https://github.com/PereViader/PereViader.Utils</RepositoryUrl>
-
-        <Version>1.0.1</Version>
-        <developmentDependency>true</developmentDependency>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <IncludeBuildOutput>false</IncludeBuildOutput>
-        <NoPackageAnalysis>true</NoPackageAnalysis>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
-    </ItemGroup>
-
-    <!-- This is necessary to make the analyzer work when consumed as a Nuget package -->
-    <ItemGroup>
-        <None Include="$(OutputPath)\$(AssemblyName).dll"
-              Pack="true"
-              PackagePath="analyzers/dotnet/cs"
-              Visible="false" />
     </ItemGroup>
 </Project>

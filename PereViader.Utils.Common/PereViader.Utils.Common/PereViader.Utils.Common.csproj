@@ -6,12 +6,19 @@
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>Nullable</WarningsAsErrors>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/PereViader/PereViader.Utils</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\PereViader.Utils.Common.Generators\PereViader.Utils.Common.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\PereViader.Utils.Common.Generators\bin\$(Configuration)\netstandard2.0\PereViader.Utils.Common.Generators.dll"
+            Pack="true"
+            PackagePath="analyzers/dotnet/cs"
+            Visible="false" />
     </ItemGroup>
 </Project>

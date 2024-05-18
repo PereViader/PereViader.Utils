@@ -23,10 +23,3 @@ jobs:
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           PROJECT_FILE_PATH: PereViader.Utils.Common/PereViader.Utils.Common/PereViader.Utils.Common.csproj
           REBUILD_PROJECT: false
-
-      - name: Publish Generators
-        uses: tedd/publish-nuget-neo@v1
-        with:
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-          PROJECT_FILE_PATH: PereViader.Utils.Common/PereViader.Utils.Common.Generators/PereViader.Utils.Common.Generators.csproj
-          REBUILD_PROJECT: false
