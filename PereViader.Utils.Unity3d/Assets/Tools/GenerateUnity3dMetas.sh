@@ -61,9 +61,9 @@ traverse_and_generate() {
     local dir="$1"
     for item in "$dir"/*; do
         # Skip if the item is a .meta file
-        if [[ "$item" == *.meta ]]; then
-            continue
-        fi
+        case "$item" in
+            *.meta) continue ;;
+        esac
 
         # Check if a .meta file already exists, skip if it does
         if [ -f "$item.meta" ]; then
@@ -72,9 +72,9 @@ traverse_and_generate() {
 
         # Check for directories and skip those ending with ~
         if [ -d "$item" ]; then
-            if [[ "$item" == *~ ]]; then
-                continue
-            fi
+            case "$item" in
+                *~) continue ;;
+            esac
             echo "Generating .meta for directory: $item"
             generate_folder_meta "$item"
             traverse_and_generate "$item"  # Recursive call for subdirectories
@@ -82,11 +82,13 @@ traverse_and_generate() {
         fi
 
         # Generate .meta for .cs files
-        if [ "$item" == *.cs ]; then
-            echo "Generating .meta for script: $item"
-            generate_cs_meta "$item"
-            continue
-        fi
+        case "$item" in
+            *.cs)
+                echo "Generating .meta for script: $item"
+                generate_cs_meta "$item"
+                continue
+                ;;
+        esac
 
         # Generate .meta for non-.cs files
         echo "Generating .meta for other file: $item"
