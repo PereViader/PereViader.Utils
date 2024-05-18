@@ -3,7 +3,7 @@
 # PereViader.Utils
 
 ## Overview
-The project `PereViader.Utils` is a collection of C# utilities started with the aim to not need to reimplement or remember how I previously solved issues and quickly jumpstart any personal project to a state where I can quickly start developing new stuff.
+The project `PereViader.Utils` is a collection of C# utilities meant to quickly start developing new stuff instead of needing to repeat fluff over and over again.
 
 Given that this library is primarily intended for my personal use, extensive efforts won't be made towards ensuring backward compatibility. Consequently, be prepared to encounter functionality that has changed / been removed, if you opt to utilize the library and subsequently update it in the future.
 
@@ -17,11 +17,14 @@ Roslyn source generators that can be applied to any c# game / application
 
 ### PereViader.Utils.Unity3d
 Utilites specifically tailored towards Unity3d game development
+Notice the package provides samples to experiment with the functionality provided
 
 ## Installation
-- `PereViader.Utils.Common` can be installed through Nuget here https://www.nuget.org/packages/PereViader.Utils.Common/
-- `PereViader.Utils.Common.Generators` can be installed through Nuget here https://www.nuget.org/packages/PereViader.Utils.Common.Generators/
-- `PereViader.Utils.Unity3d` given the build/release pipeline is not yet setup, download the source and install it manually.
+- `PereViader.Utils.Common` and `PereViader.Utils.Common.Generators` can be installed through Nuget here https://www.nuget.org/packages/PereViader.Utils.Common/
+- `PereViader.Utils.Unity3d` can be installed through Github Release https://github.com/PereViader/PereViader.Utils/releases/latest
+  - Download the .tgz package
+  - Add it to your project (don't add it within the  `Assets` folder. Make it a sibling for example)
+  - Unity > Package Manager > + > Add package from tarball
 
 ## Contributing
 We welcome bug reports and feature requests through issues.
