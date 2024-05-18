@@ -1,7 +1,6 @@
 name: Publish Unity3d Package
 on: 
   workflow_call:
-  workflow_dispatch:
       
 env:
   version_file: PereViader.Utils.Common/PereViader.Utils.Common/PereViader.Utils.Common.csproj
@@ -23,7 +22,8 @@ jobs:
 
       - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnityPackageReleaseFolder.sh
       - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnity3dMetas.sh
-      - run: |
+      - name: Create Package
+        run: |
           cd UnityPackageRelease
           npm pack
 

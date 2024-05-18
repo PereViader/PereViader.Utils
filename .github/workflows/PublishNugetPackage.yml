@@ -2,7 +2,6 @@ name: Publish Nuget Package
 
 on: 
   workflow_call:
-  workflow_dispatch:
 
 jobs:
   PublishNugetPackage:
@@ -15,7 +14,8 @@ jobs:
         with:
           dotnet-version: '6.0'
           
-      - run: dotnet build PereViader.Utils.Common --configuration Release
+      - name: Build Common Project
+        run: dotnet build PereViader.Utils.Common --configuration Release
       
       - name: Publish Common
         uses: tedd/publish-nuget-neo@v1

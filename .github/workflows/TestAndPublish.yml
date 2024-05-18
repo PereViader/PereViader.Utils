@@ -1,6 +1,5 @@
 name: Test and publish
 on: 
-  workflow_call:
   workflow_dispatch:
 #  push:
 #    branches:
@@ -9,14 +8,23 @@ on:
 jobs:
     TestCommon:
       uses: ./.github/workflows/TestCommon.yml
+      secrets: inherit
     
     TestUnity3d:
       uses: ./.github/workflows/TestUnity3d.yml
+      secrets: inherit
+      permissions:
+        contents: read
+        checks: write
     
     PublishNugetPackage:
       needs: [TestCommon, TestUnity3d]
       uses: ./.github/workflows/PublishNugetPackage.yml
+      secrets: inherit
     
     PublishUnity3dPackage:
-      needs: [PublishNugetPackage]
+      needs: [TestCommon, TestUnity3d]
       uses: ./.github/workflows/PublishUnity3dPackage.yml
+      secrets: inherit
+      permissions:
+        contents: write

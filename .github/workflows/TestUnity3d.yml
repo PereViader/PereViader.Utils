@@ -1,7 +1,6 @@
 name: Test Unity3d
 on: 
   workflow_call:
-  workflow_dispatch:  
 
 jobs:
   TestUnity3d:
