@@ -18,7 +18,7 @@ jobs:
       - id: get-version
         run: |
           version=$(grep -oP '(?<=<Version>)[^<]+' "${{ env.version_file }}")
-          echo "##[set-output name=version;]$version"
+          echo "version=$version" >> $GITHUB_OUTPUT
 
       - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnityPackageReleaseFolder.sh
       - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnity3dMetas.sh
