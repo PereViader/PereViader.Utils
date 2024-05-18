@@ -29,7 +29,7 @@ namespace PereViader.Utils.Common.ActiveStatuses
             return _registry.Contains(owner) ^ DefaultActiveState;
         }
 
-        public bool Update(object owner, bool active)
+        public bool SetActive(object owner, bool active)
         {
             var previousActive = IsActive();
 
@@ -53,15 +53,21 @@ namespace PereViader.Utils.Common.ActiveStatuses
             return hasChanged;
         }
 
-        public bool Toggle(object owner)
+        public bool ToggleActive(object owner)
         {
             var previousActive = IsActive(owner);
-            return Update(owner, !previousActive);
+            return SetActive(owner, !previousActive);
         }
 
         public void ForgetAll()
         {
+            var previousActive = IsActive();
             _registry.Clear();
+            var currentActive = IsActive();
+            if (previousActive != currentActive)
+            {
+                OnChanged?.Invoke(currentActive);
+            }
         }
     }
     

@@ -72,4 +72,4 @@ echo Copy generator dll to package
 cp "PereViader.Utils.Common/PereViader.Utils.Common.Generators/bin/Release/netstandard2.0/PereViader.Utils.Common.Generators.dll" "UnityPackageRelease/PereViader.Utils.Common.Generators.dll"
 
 echo Generating meta for PereViader.Utils.Common.Generators.dll
-cp "$SOURCE_UNITY3D/Assets/Tools/Meta~/PereViader.Utils.Common.Generators.dll.meta" "UnityPackageRelease/PereViader.Utils.Common.Generators.dll"
+cp "PereViader.Utils.Unity3d/Assets/Tools/Meta~/PereViader.Utils.Common.Generators.dll.meta" "UnityPackageRelease/PereViader.Utils.Common.Generators.dll"

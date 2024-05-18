@@ -82,7 +82,7 @@ traverse_and_generate() {
         fi
 
         # Generate .meta for .cs files
-        if [[ "$item" == *.cs ]]; then
+        if [ "$item" == *.cs ]; then
             echo "Generating .meta for script: $item"
             generate_cs_meta "$item"
             continue

@@ -3,13 +3,11 @@ on:
   workflow_call:
   workflow_dispatch:  
 
-env:
-  unity_project: PereViader.Utils.Unity3d
-
 jobs:
-  PublishUnity3dPackage:
+  TestUnity3d:
     permissions:
-      contents: write
+      contents: read
+      checks: write
 
     runs-on: ubuntu-latest
     
@@ -24,5 +22,5 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: ${{ env.unity_project}}
+          projectPath: "PereViader.Utils.Unity3d"
           githubToken: ${{ secrets.GITHUB_TOKEN }}

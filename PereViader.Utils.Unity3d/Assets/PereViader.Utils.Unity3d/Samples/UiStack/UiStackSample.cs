@@ -30,12 +30,12 @@ namespace PereViader.Utils.Unity3d.Samples.UiStack
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                _uiStackService.InteractableActiveStatus.Toggle(this);
+                _uiStackService.InteractableActiveStatus.ToggleActive(this);
             }
             
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                _uiStackService.LayerInteractableActiveStatus[UiStackLayer.DefaultLayer].Toggle(this);
+                _uiStackService.LayerInteractableActiveStatus[UiStackLayer.DefaultLayer].ToggleActive(this);
             }
             
             if (Input.GetKeyDown(KeyCode.Alpha3))

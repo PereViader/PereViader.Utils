@@ -23,11 +23,13 @@ jobs:
 
       - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnityPackageReleaseFolder.sh
       - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnity3dMetas.sh
-      - run: npm pack UnityPackageRelease
+      - run: |
+          cd UnityPackageRelease
+          npm pack
 
-      - name: Create github release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: PereViader.Utils.Unity3d ${{ steps.get-version.outputs.version }}
-          files: |
-            com.pereviader.utils.unity3d-${{ steps.get-version.outputs.version }}.tgz
+      # - name: Create github release
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     name: PereViader.Utils.Unity3d ${{ steps.get-version.outputs.version }}
+      #     files: |
+      #       UnityPackageRelease/com.pereviader.utils.unity3d-${{ steps.get-version.outputs.version }}.tgz
