@@ -19,6 +19,10 @@ Roslyn source generators that can be applied to any c# game / application
 Utilites specifically tailored towards Unity3d game development
 Notice the package provides samples to experiment with the functionality provided
 
+### PereViader.Utils.Godot
+Utilites specifically tailored towards Godot game development
+I haven't delved into it much so there is not much to it for now
+
 ## Installation
 - `PereViader.Utils.Common` and `PereViader.Utils.Common.Generators` can be installed through Nuget here https://www.nuget.org/packages/PereViader.Utils.Common/
 - `PereViader.Utils.Unity3d` can be installed through Github Release https://github.com/PereViader/PereViader.Utils/releases/latest
