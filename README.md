@@ -1,4 +1,4 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Test and publish](https://github.com/PereViader/PereViader.Utils/actions/workflows/TestAndPublish.yml/badge.svg)](https://github.com/PereViader/PereViader.Utils/actions/workflows/TestAndPublish.yml)
+[![License: 0BSD](https://img.shields.io/badge/License-0BSD-yellow.svg)](https://opensource.org/license/0bsd) [![Test and publish](https://github.com/PereViader/PereViader.Utils/actions/workflows/TestAndPublish.yml/badge.svg)](https://github.com/PereViader/PereViader.Utils/actions/workflows/TestAndPublish.yml)
 
 # PereViader.Utils
 
