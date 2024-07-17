@@ -29,17 +29,10 @@ jobs:
           echo "Release exists $release_exists"
           echo "exists=$release_exists" >> $GITHUB_OUTPUT
 
-      - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnityPackageReleaseFolder.sh
-        if: ${{ steps.release-exists.outputs.exists == 'false' }}
-
-      - run: sh ./PereViader.Utils.Unity3d/Assets/Tools/GenerateUnity3dMetas.sh
-        if: ${{ steps.release-exists.outputs.exists == 'false' }}
-
       - name: Create Package
         if: ${{ steps.release-exists.outputs.exists == 'false' }}
         run: |
-          cd UnityPackageRelease
-          npm pack
+          sh ./PereViader.Utils.Unity3d/Assets/Tools/GeneratePackage.sh
 
       - name: Create github release
         if: ${{ steps.release-exists.outputs.exists == 'false' }}

@@ -17,7 +17,7 @@ namespace PereViader.Utils.Unity3d.Extensions
             }
         }
         
-        public static async Task WaitUntil(this Func<bool> func, CancellationToken ct)
+        public static async Task WaitUntil(this Func<bool> func, CancellationToken ct = default)
         {
             while (!func())
             {
@@ -26,7 +26,7 @@ namespace PereViader.Utils.Unity3d.Extensions
             }
         }
         
-        public static async Task WaitWhile(this Func<bool> func, CancellationToken ct)
+        public static async Task WaitWhile(this Func<bool> func, CancellationToken ct = default)
         {
             while (func())
             {
@@ -35,13 +35,13 @@ namespace PereViader.Utils.Unity3d.Extensions
             }
         }
         
-        public static async Task WaitFrame(CancellationToken ct)
+        public static async Task WaitFrame(CancellationToken ct = default)
         {
             await Task.Yield();
             ct.ThrowIfCancellationRequested();
         }
         
-        public static async Task WaitFrames(int frameCount, CancellationToken ct)
+        public static async Task WaitFrames(int frameCount, CancellationToken ct = default)
         {
             for (int i = 0; i < frameCount; i++)
             {
