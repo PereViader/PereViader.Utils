@@ -1,16 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace PereViader.Utils.Common.ApplicationContexts
 {
     /// <summary>
-    /// This handle represents a change in the application context. The change will wait until AllowComplete is called on it
-    /// before the IApplicationContext.Enter/Resume is called. This is done in order to allow external systems like loading screens
-    /// to intervene in the loading process and prevent the context change to actually start until they are done
+    /// Wrapper around IApplicationContext that is used to represent an active context
     /// </summary>
-    public interface IApplicationContextHandle
+    public interface IApplicationContextHandle : IAsyncDisposable
     {
+        IApplicationContext ApplicationContext { get; }
+        
         Task Load();
         Task Start();
-        Task Unload();
     }
 }

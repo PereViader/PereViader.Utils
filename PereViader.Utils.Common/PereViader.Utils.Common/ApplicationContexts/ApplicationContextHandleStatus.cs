@@ -5,6 +5,7 @@
         Awaiting,
         Loaded,
         Started,
-        Unloaded
+        Disposing,
+        Disposed
     }
 }

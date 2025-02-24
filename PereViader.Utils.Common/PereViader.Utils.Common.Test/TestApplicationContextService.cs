@@ -14,7 +14,7 @@ public class TestApplicationContextService
         var service = new ApplicationContextService();
         var handle = service.Add(context);
         
-        handle.Unload();
+        handle.DisposeAsync();
         
         Assert.That(service.ApplicationContexts, Is.Empty);
     }
@@ -28,7 +28,7 @@ public class TestApplicationContextService
 
         handle.Load();
         handle.Start();
-        handle.Unload();
+        handle.DisposeAsync();
         
         Received.InOrder(() =>
         {
@@ -73,8 +73,8 @@ public class TestApplicationContextService
         handle2.Load();
         handle2.Start();
         handle1.Start();
-        handle2.Unload();
-        handle1.Unload();
+        handle2.DisposeAsync();
+        handle1.DisposeAsync();
         
         Received.InOrder(() =>
         {

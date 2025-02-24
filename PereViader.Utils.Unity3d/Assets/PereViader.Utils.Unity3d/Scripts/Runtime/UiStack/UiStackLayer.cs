@@ -11,6 +11,10 @@ namespace PereViader.Utils.Unity3d.UiStack
             Name = name;
         }
 
+        /// <summary>
+        /// This only includes the default layer.
+        /// If you need more layers, create a new method with the necessary ones.
+        /// </summary>
         public static UiStackLayer[] CreateDefaultLayers() => new [] { DefaultLayer };
     }
 }

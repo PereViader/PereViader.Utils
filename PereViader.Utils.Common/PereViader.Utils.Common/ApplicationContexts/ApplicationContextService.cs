@@ -7,7 +7,7 @@ using PereViader.Utils.Common.TaskRunners;
 
 namespace PereViader.Utils.Common.ApplicationContexts
 {
-    public class ApplicationContextService : IApplicationContextService
+    public class ApplicationContextService : IApplicationContextService, IDisposable
     {
         private readonly List<IApplicationContext> _applicationContexts = new();
         private readonly TaskRunner _taskRunner = new();
@@ -19,23 +19,21 @@ namespace PereViader.Utils.Common.ApplicationContexts
             _applicationContexts.Add(applicationContext);
 
             return new ApplicationContextHandle(
-                () => LoadContext(applicationContext),
-                () => StartContext(applicationContext),
-                () => UnloadContext(applicationContext)
-            );
+                this,
+                applicationContext);
         }
 
-        private Task LoadContext(IApplicationContext applicationContext)
+        internal Task LoadContext(IApplicationContext applicationContext)
         {
             return _taskRunner.RunSequenced((o, _) => o.Load(), applicationContext);
         }
         
-        private Task StartContext(IApplicationContext applicationContext)
+        internal Task StartContext(IApplicationContext applicationContext)
         {
             return _taskRunner.RunSequenced((o, _) => o.Start(), applicationContext);
         }
 
-        private Task UnloadContext(IApplicationContext applicationContext)
+        internal Task DisposeContext(IApplicationContext applicationContext)
         {
             return _taskRunner.RunSequenced((o, _) =>
             {
@@ -48,6 +46,11 @@ namespace PereViader.Utils.Common.ApplicationContexts
         {
             var actualMatch = match ?? DelegateExtensions.With<T>.TrueFunc;
             return _applicationContexts.OfType<T>().FirstOrDefault(actualMatch);
+        }
+
+        public void Dispose()
+        {
+            _taskRunner.Dispose();
         }
     }
 }

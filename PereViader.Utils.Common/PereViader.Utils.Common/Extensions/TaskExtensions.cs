@@ -76,5 +76,23 @@ namespace PereViader.Utils.Common.Extensions
                 cancellationTokenSource.Cancel();
             }
         }
+
+        public static async ValueTask WaitUntil(Func<bool> func, CancellationToken ct)
+        {
+            while (!func())
+            {
+                await Task.Yield();
+                ct.ThrowIfCancellationRequested();
+            }
+        }
+        
+        public static async ValueTask WaitWhile(Func<bool> func, CancellationToken ct)
+        {
+            while (func())
+            {
+                await Task.Yield();
+                ct.ThrowIfCancellationRequested();
+            }
+        }
     }
 }

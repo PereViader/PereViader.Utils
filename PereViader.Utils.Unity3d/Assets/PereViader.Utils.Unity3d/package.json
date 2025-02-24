@@ -4,6 +4,7 @@
     "displayName": "PereViader.Utils.Unity3d",
     "description": "Utilites specifically tailored towards Unity3d game development",
     "unity": "2021.1",
+    "license": "MIT",
     "documentationUrl": "https://github.com/PereViader/PereViader.Utils",
     "changelogUrl": "https://github.com/PereViader/PereViader.Utils/commits/main/",
     "licensesUrl": "https://opensource.org/license/mit",

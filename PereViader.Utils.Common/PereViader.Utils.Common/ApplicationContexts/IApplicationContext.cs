@@ -4,22 +4,21 @@ using System.Threading.Tasks;
 namespace PereViader.Utils.Common.ApplicationContexts
 {
     /// <summary>
-    /// An application context is whatever area of your application that has its own separate identity from the rest of the app.
-    /// It provides several hooks in the execution of the application stack lifecycle to be able to implement whatever functionality needed.
-    /// Feel free to add any further methods like preloading and use any pooling desired on instances of this interface.
-    /// Those can be manually called by the user and serve to extend the functionality further with the custom needs the user might have.
+    /// An application context is an area of your application that has its own separate identity from the rest of the app.
+    /// The IApplicationContext API just knows how to load, start and dispose of the context.
+    /// The context should not be used directly. It should be used from <see cref="IApplicationContextHandle"/> instead.
     /// </summary>
     public interface IApplicationContext : IAsyncDisposable
     {
         /// <summary>
-        /// Will load whatever the application context needs into memory but still not actually do anything the user needs to see.
-        /// This is usually tied with loading screens so everything in here usually happens behind a loading screen.
+        /// Load the context into memory but still not do anything with it.
+        /// This usually goes together with a loading screen to make the loading prettier
         /// </summary>
         Task Load();
         
         /// <summary>
-        /// Will start the context at a proper time when the user can see what happens.
-        /// This is usually tied with loading screens so when the loading screen is gone, this is triggered.
+        /// Must be called after the context has finished loading.
+        /// Will take whatever the context loaded previously and engage its entry point logic
         /// </summary>
         Task Start();
     }

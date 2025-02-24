@@ -6,7 +6,7 @@
         <LangVersion>9</LangVersion>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>Nullable</WarningsAsErrors>
-        <Version>1.0.3</Version>
+        <Version>1.1.0</Version>
         <PackageLicenseExpression>0BSD</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/PereViader/PereViader.Utils</RepositoryUrl>
     </PropertyGroup>
