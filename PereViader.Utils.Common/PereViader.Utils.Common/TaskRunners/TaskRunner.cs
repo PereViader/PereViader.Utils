@@ -28,7 +28,6 @@ namespace PereViader.Utils.Common.TaskRunners
                 Func = func;
                 TaskCompletionSource = taskCompletionSource;
                 CancellationTokenSource = cancellationTokenSource;
-                TaskCompletionSource.LinkCancellationToken(CancellationTokenSource.Token);
             }
             
             public async Task Run()
@@ -72,7 +71,6 @@ namespace PereViader.Utils.Common.TaskRunners
                 Func = func;
                 TaskCompletionSource = taskCompletionSource;
                 CancellationTokenSource = cancellationTokenSource;
-                TaskCompletionSource.LinkCancellationToken(CancellationTokenSource.Token);
             }
             
             public async Task Run()
@@ -119,7 +117,6 @@ namespace PereViader.Utils.Common.TaskRunners
                 TaskCompletionSource = taskCompletionSource;
                 CancellationTokenSource = cancellationTokenSource;
                 StopOnFirstException = stopOnFirstException;
-                TaskCompletionSource.LinkCancellationToken(CancellationTokenSource.Token);
             }
             
             public async Task Run()
@@ -204,7 +201,6 @@ namespace PereViader.Utils.Common.TaskRunners
                 TaskCompletionSource = taskCompletionSource;
                 CancellationTokenSource = cancellationTokenSource;
                 StopOnFirstException = stopOnFirstException;
-                TaskCompletionSource.LinkCancellationToken(CancellationTokenSource.Token);
             }
             
             public async Task Run()
@@ -386,7 +382,6 @@ namespace PereViader.Utils.Common.TaskRunners
                 CancellationTokenSource = cancellationTokenSource;
                 StopOnFirstException = stopOnFirstException;
                 State = state;
-                TaskCompletionSource.LinkCancellationToken(CancellationTokenSource.Token);
             }
             
             public async Task Run()
@@ -473,7 +468,6 @@ namespace PereViader.Utils.Common.TaskRunners
                 CancellationTokenSource = cancellationTokenSource;
                 StopOnFirstException = stopOnFirstException;
                 State = state;
-                TaskCompletionSource.LinkCancellationToken(CancellationTokenSource.Token);
             }
             
             public async Task Run()
