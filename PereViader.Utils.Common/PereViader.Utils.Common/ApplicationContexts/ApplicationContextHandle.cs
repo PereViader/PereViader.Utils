@@ -52,7 +52,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
             }
             
             CurrentApplicationContextHandleStatus = ApplicationContextHandleStatus.Disposing;
-            await _applicationContextService.DisposeContext(ApplicationContext);
+            await _applicationContextService.DisposeContext(this);
             CurrentApplicationContextHandleStatus = ApplicationContextHandleStatus.Disposed;
         }
     }

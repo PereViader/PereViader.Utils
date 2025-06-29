@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using PereViader.Utils.Common.Extensions;
 using PereViader.Utils.Common.TaskRunners;
@@ -9,18 +8,20 @@ namespace PereViader.Utils.Common.ApplicationContexts
 {
     public class ApplicationContextService : IApplicationContextService, IDisposable
     {
-        private readonly List<IApplicationContext> _applicationContexts = new();
+        private readonly List<IApplicationContextHandle> _applicationContextHandles = new();
         private readonly TaskRunner _taskRunner = new();
 
-        public IReadOnlyList<IApplicationContext> ApplicationContexts => _applicationContexts;
+        public IReadOnlyList<IApplicationContextHandle> ApplicationContextHandles => _applicationContextHandles;
 
         public IApplicationContextHandle Add(IApplicationContext applicationContext)
         {
-            _applicationContexts.Add(applicationContext);
-
-            return new ApplicationContextHandle(
+            var applicationContextHandle = new ApplicationContextHandle(
                 this,
                 applicationContext);
+            
+            _applicationContextHandles.Add(applicationContextHandle);
+
+            return applicationContextHandle;
         }
 
         internal Task LoadContext(IApplicationContext applicationContext)
@@ -33,19 +34,26 @@ namespace PereViader.Utils.Common.ApplicationContexts
             return _taskRunner.RunSequenced((o, _) => o.Start(), applicationContext);
         }
 
-        internal Task DisposeContext(IApplicationContext applicationContext)
+        internal Task DisposeContext(IApplicationContextHandle applicationContextHandle)
         {
-            return _taskRunner.RunSequenced((o, _) =>
+            return _taskRunner.RunSequenced(static async (o, _) =>
             {
-                o._applicationContexts.Remove(o.applicationContext);
-                return o.applicationContext.DisposeAsync().AsTask();
-            }, (applicationContext, _applicationContexts));
+                o.@this._applicationContextHandles.Remove(o.applicationContextHandle);
+                await o.applicationContextHandle.ApplicationContext.DisposeAsync();
+            }, (applicationContextHandle, @this: this));
         }
 
-        public T? Get<T>(Func<T, bool>? match = null) where T : IApplicationContext
+        public IApplicationContextHandle? Get<T>(Func<T, bool>? match = null) where T : IApplicationContext
         {
             var actualMatch = match ?? DelegateExtensions.With<T>.TrueFunc;
-            return _applicationContexts.OfType<T>().FirstOrDefault(actualMatch);
+            foreach (var applicationContextHandle in _applicationContextHandles)
+            {
+                if (applicationContextHandle.ApplicationContext is T context && actualMatch(context))
+                {
+                    return applicationContextHandle;
+                }
+            }
+            return null;
         }
 
         public void Dispose()

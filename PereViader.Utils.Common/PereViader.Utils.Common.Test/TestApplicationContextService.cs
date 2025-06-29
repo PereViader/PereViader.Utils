@@ -16,19 +16,19 @@ public class TestApplicationContextService
         
         handle.DisposeAsync();
         
-        Assert.That(service.ApplicationContexts, Is.Empty);
+        Assert.That(service.ApplicationContextHandles, Is.Empty);
     }
     
     [Test]
-    public void AddAndUseHandle_OnSingleHandle_RunsInExpectedOrder()
+    public async Task AddAndUseHandle_OnSingleHandle_RunsInExpectedOrder()
     {
         var context = CreateApplicationContextThatCompletesInstantly();
         var service = new ApplicationContextService();
         var handle = service.Add(context);
 
-        handle.Load();
-        handle.Start();
-        handle.DisposeAsync();
+        await handle.Load();
+        await handle.Start();
+        await handle.DisposeAsync();
         
         Received.InOrder(() =>
         {
@@ -43,10 +43,10 @@ public class TestApplicationContextService
     {
         var context = Substitute.For<IApplicationContext>();
         var service = new ApplicationContextService();
-        service.Add(context);
+        var handle = service.Add(context);
 
-        var foundContext = service.Get<IApplicationContext>();
-        Assert.That(foundContext, Is.EqualTo(context));
+        var foundContextHandle = service.Get<IApplicationContext>();
+        Assert.That(foundContextHandle, Is.EqualTo(handle));
     }
     
     [Test]
@@ -54,14 +54,14 @@ public class TestApplicationContextService
     {
         var context = Substitute.For<IApplicationContext>();
         var service = new ApplicationContextService();
-        service.Add(context);
+        var handle = service.Add(context);
 
         var foundContext = service.Get<IApplicationContext>(x => x == context);
-        Assert.That(foundContext, Is.EqualTo(context));
+        Assert.That(foundContext, Is.EqualTo(handle));
     }
 
     [Test]
-    public void AddAndUseHandle_OnMultipleHandles_RunsInExpectedOrder()
+    public async Task AddAndUseHandle_OnMultipleHandles_RunsInExpectedOrder()
     {
         var context1 = CreateApplicationContextThatCompletesInstantly();
         var context2 = CreateApplicationContextThatCompletesInstantly();
@@ -69,12 +69,12 @@ public class TestApplicationContextService
         var handle1 = service.Add(context1);
         var handle2 = service.Add(context2);
         
-        handle1.Load();
-        handle2.Load();
-        handle2.Start();
-        handle1.Start();
-        handle2.DisposeAsync();
-        handle1.DisposeAsync();
+        await handle1.Load();
+        await handle2.Load();
+        await handle2.Start();
+        await handle1.Start();
+        await handle2.DisposeAsync();
+        await handle1.DisposeAsync();
         
         Received.InOrder(() =>
         {
