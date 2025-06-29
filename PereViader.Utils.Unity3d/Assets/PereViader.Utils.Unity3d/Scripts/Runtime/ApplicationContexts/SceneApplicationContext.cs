@@ -16,14 +16,17 @@ namespace PereViader.Utils.Unity3d.ApplicationContexts
         public abstract string SceneName { get; }
         public virtual LoadSceneMode LoadSceneMode => LoadSceneMode.Additive;
         public virtual UnloadSceneOptions UnloadSceneOptions => UnloadSceneOptions.None;
+        public Scene? Scene { get; private set; }
         
         public virtual async Task Load()
         {
+            var nextSceneIndex = SceneManager.sceneCount;
             var asyncOperation = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode);
             if (asyncOperation is null)
             {
                 throw new InvalidOperationException($"Could not load scene {SceneName}"); 
             }
+            Scene = SceneManager.GetSceneAt(nextSceneIndex);
             await TaskExtensions.WaitUntil(() => asyncOperation.isDone, CancellationToken.None);
         }
 
@@ -34,7 +37,11 @@ namespace PereViader.Utils.Unity3d.ApplicationContexts
         
         public async ValueTask DisposeAsync()
         {
-            var asyncOperation = SceneManager.UnloadSceneAsync(SceneName, UnloadSceneOptions);
+            if (!Scene.HasValue)
+            {
+                return;
+            }
+            var asyncOperation = SceneManager.UnloadSceneAsync(Scene.Value, UnloadSceneOptions);
             if (asyncOperation is null)
             {
                 throw new InvalidOperationException($"Could not unload scene {SceneName}"); 
