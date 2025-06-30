@@ -27,12 +27,12 @@ namespace PereViader.Utils.Common.ApplicationContexts
 
         internal Task LoadContext(IApplicationContext applicationContext, CancellationToken ct)
         {
-            return _taskRunner.RunSequenced((o, ct) => o.Load(ct), applicationContext, ct);
+            return _taskRunner.RunSequenced(static (o, ct) => o.Load(ct), applicationContext, ct);
         }
         
         internal Task StartContext(IApplicationContext applicationContext, CancellationToken ct)
         {
-            return _taskRunner.RunSequenced((o, ct) => o.Start(ct), applicationContext, ct);
+            return _taskRunner.RunSequenced(static (o, ct) => o.Start(ct), applicationContext, ct);
         }
 
         internal Task DisposeContext(IApplicationContextHandle applicationContextHandle)

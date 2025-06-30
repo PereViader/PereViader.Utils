@@ -64,7 +64,7 @@ public class ApplicationContextsSample : MonoBehaviour
         _currentApplicationContextHandle = _applicationContextService.Add(nextApplicationContext);
 
         //With this pattern it is trivial to add a loading screen that hides the loading and disposal of application contexts 
-        await _currentApplicationContextHandle.Load();
+        await _currentApplicationContextHandle.Load(ct);
         
         // We could run loading and unloading in parallel if we used Task.WhenAll
         if (previousApplicationContext != null)
@@ -72,7 +72,7 @@ public class ApplicationContextsSample : MonoBehaviour
             await previousApplicationContext.DisposeAsync();
         }
         
-        await _currentApplicationContextHandle.Start();
+        await _currentApplicationContextHandle.Start(ct);
     }
         
     void OnDestroy()

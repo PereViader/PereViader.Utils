@@ -42,6 +42,7 @@ namespace PereViader.Utils.Unity3d.ApplicationContexts
                 return;
             }
             var asyncOperation = SceneManager.UnloadSceneAsync(Scene.Value, UnloadSceneOptions);
+            Scene = null;
             if (asyncOperation is null)
             {
                 throw new InvalidOperationException($"Could not unload scene {SceneName}"); 
