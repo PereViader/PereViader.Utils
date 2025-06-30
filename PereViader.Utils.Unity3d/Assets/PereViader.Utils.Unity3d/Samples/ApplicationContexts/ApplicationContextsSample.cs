@@ -11,19 +11,19 @@ using UnityEngine;
 // For example loading assets  from addressables, or even building scenes dynamically
 public class Scene1ApplicationContext : SceneApplicationContext 
 {
-    public override string SceneName { get; } = "ApplicationContextScene1";
+    public override string SceneName => "ApplicationContextScene1";
 
-    public override Task Load()
+    public override Task Load(CancellationToken ct)
     {
         //Some dummy logic to showcase you can do further stuff
         Debug.Log("Scene will now load");
-        return base.Load();
+        return base.Load(ct);
     }
 
-    public override Task Start()
+    public override Task Start(CancellationToken ct)
     {
         Debug.Log("Scene 1 is now loaded and you can do things with it for example get references to the scene objects");
-        return base.Start();
+        return base.Start(ct);
     }
 }
 

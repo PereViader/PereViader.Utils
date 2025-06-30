@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PereViader.Utils.Common.ApplicationContexts
@@ -19,7 +20,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
             _applicationContextService = applicationContextService;
         }
 
-        public async Task Load()
+        public async Task Load(CancellationToken ct)
         {
             if (CurrentApplicationContextHandleStatus != ApplicationContextHandleStatus.Awaiting)
             {
@@ -27,11 +28,11 @@ namespace PereViader.Utils.Common.ApplicationContexts
                     $"Can't load unless the context is awaiting. It currently is [{CurrentApplicationContextHandleStatus}]");
             }
 
-            await _applicationContextService.LoadContext(ApplicationContext);
+            await _applicationContextService.LoadContext(ApplicationContext, ct);
             CurrentApplicationContextHandleStatus = ApplicationContextHandleStatus.Loaded;
         }
 
-        public async Task Start()
+        public async Task Start(CancellationToken ct)
         {
             if (CurrentApplicationContextHandleStatus != ApplicationContextHandleStatus.Loaded)
             {
@@ -39,7 +40,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
                     $"Can't start unless the context is loaded. It currently is [{CurrentApplicationContextHandleStatus}]");
             }
 
-            await _applicationContextService.StartContext(ApplicationContext);
+            await _applicationContextService.StartContext(ApplicationContext, ct);
             CurrentApplicationContextHandleStatus = ApplicationContextHandleStatus.Started;
         }
 

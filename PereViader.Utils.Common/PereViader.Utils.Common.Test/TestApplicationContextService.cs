@@ -26,14 +26,14 @@ public class TestApplicationContextService
         var service = new ApplicationContextService();
         var handle = service.Add(context);
 
-        await handle.Load();
-        await handle.Start();
+        await handle.Load(CancellationToken.None);
+        await handle.Start(CancellationToken.None);
         await handle.DisposeAsync();
         
         Received.InOrder(() =>
         {
-            context.Load();
-            context.Start();
+            context.Load(Arg.Any<CancellationToken>());
+            context.Start(Arg.Any<CancellationToken>());
             context.DisposeAsync();
         });
     }
@@ -69,19 +69,19 @@ public class TestApplicationContextService
         var handle1 = service.Add(context1);
         var handle2 = service.Add(context2);
         
-        await handle1.Load();
-        await handle2.Load();
-        await handle2.Start();
-        await handle1.Start();
+        await handle1.Load(CancellationToken.None);
+        await handle2.Load(CancellationToken.None);
+        await handle2.Start(CancellationToken.None);
+        await handle1.Start(CancellationToken.None);
         await handle2.DisposeAsync();
         await handle1.DisposeAsync();
         
         Received.InOrder(() =>
         {
-            context1.Load();
-            context2.Load();
-            context2.Start();
-            context1.Start();
+            context1.Load(Arg.Any<CancellationToken>());
+            context2.Load(Arg.Any<CancellationToken>());
+            context2.Start(Arg.Any<CancellationToken>());
+            context1.Start(Arg.Any<CancellationToken>());
             context2.DisposeAsync();
             context1.DisposeAsync();
         });
@@ -91,8 +91,8 @@ public class TestApplicationContextService
     {
         var context = Substitute.For<IApplicationContext>();
 
-        context.Load().Returns(Task.CompletedTask);
-        context.Start().Returns(Task.CompletedTask);
+        context.Load(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        context.Start(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
         context.DisposeAsync().Returns(new ValueTask());
 
         return context;

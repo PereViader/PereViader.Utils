@@ -18,7 +18,7 @@ namespace PereViader.Utils.Unity3d.ApplicationContexts
         public virtual UnloadSceneOptions UnloadSceneOptions => UnloadSceneOptions.None;
         public Scene? Scene { get; private set; }
         
-        public virtual async Task Load()
+        public virtual async Task Load(CancellationToken ct)
         {
             var nextSceneIndex = SceneManager.sceneCount;
             var asyncOperation = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode);
@@ -27,10 +27,10 @@ namespace PereViader.Utils.Unity3d.ApplicationContexts
                 throw new InvalidOperationException($"Could not load scene {SceneName}"); 
             }
             Scene = SceneManager.GetSceneAt(nextSceneIndex);
-            await TaskExtensions.WaitUntil(() => asyncOperation.isDone, CancellationToken.None);
+            await TaskExtensions.WaitUntil(() => asyncOperation.isDone, ct);
         }
 
-        public virtual Task Start()
+        public virtual Task Start(CancellationToken ct)
         {
             return Task.CompletedTask;
         }

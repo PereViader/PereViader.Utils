@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PereViader.Utils.Common.ApplicationContexts
@@ -10,7 +11,7 @@ namespace PereViader.Utils.Common.ApplicationContexts
     {
         IApplicationContext ApplicationContext { get; }
         
-        Task Load();
-        Task Start();
+        Task Load(CancellationToken ct);
+        Task Start(CancellationToken ct);
     }
 }

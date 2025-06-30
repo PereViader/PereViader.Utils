@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PereViader.Utils.Common.ApplicationContexts
@@ -14,12 +15,12 @@ namespace PereViader.Utils.Common.ApplicationContexts
         /// Load the context into memory but still not do anything with it.
         /// This usually goes together with a loading screen to make the loading prettier
         /// </summary>
-        Task Load();
+        Task Load(CancellationToken ct);
         
         /// <summary>
         /// Must be called after the context has finished loading.
         /// Will take whatever the context loaded previously and engage its entry point logic
         /// </summary>
-        Task Start();
+        Task Start(CancellationToken ct);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using PereViader.Utils.Common.Extensions;
 using PereViader.Utils.Common.TaskRunners;
@@ -24,14 +25,14 @@ namespace PereViader.Utils.Common.ApplicationContexts
             return applicationContextHandle;
         }
 
-        internal Task LoadContext(IApplicationContext applicationContext)
+        internal Task LoadContext(IApplicationContext applicationContext, CancellationToken ct)
         {
-            return _taskRunner.RunSequenced((o, _) => o.Load(), applicationContext);
+            return _taskRunner.RunSequenced((o, ct) => o.Load(ct), applicationContext, ct);
         }
         
-        internal Task StartContext(IApplicationContext applicationContext)
+        internal Task StartContext(IApplicationContext applicationContext, CancellationToken ct)
         {
-            return _taskRunner.RunSequenced((o, _) => o.Start(), applicationContext);
+            return _taskRunner.RunSequenced((o, ct) => o.Start(ct), applicationContext, ct);
         }
 
         internal Task DisposeContext(IApplicationContextHandle applicationContextHandle)
